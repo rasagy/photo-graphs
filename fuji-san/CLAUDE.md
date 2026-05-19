@@ -1,74 +1,87 @@
 # Fuji-san Scrollytelling Map
 
-## Step 0: Simple marker map (done)
-`map-markers.html` — Mapbox GL JS (`light-v11`) with one arrow marker per photo, rotated by `bearing_to_fuji_deg`, opening a lightbox on click. Data sourced from `metadata_slim.csv` (embedded inline). Fuji summit marked with 🗻.
-
 ## Project Goal
-Build a scrollytelling map showing 23 iPhone 15 photos of Mt Fuji, each pinned to where it was taken, with the direction to Fuji's summit shown per location.
+A Mapbox GL JS scrollytelling page for 26 iPhone 15 photos of Mt. Fuji, each pinned to its GPS location. Photos are grouped into chapters by location/time; each chapter flies the map to that spot with satellite + 3D terrain.
 
-## Final Output
-A Mapbox GL JS scrollytelling page using the official starter template:
-- Satellite + 3D terrain basemap
-- One chapter per location group (photos taken at the same place)
-- Each chapter: fly-to animation, photo, short description, bearing toward Fuji
-- Compass rose or bearing indicator showing direction to Fuji vs. camera direction
+## Current Status
+- **Step 0 (done):** Simple marker map — `map-markers.html`
+- **Step 1 (done):** EXIF metadata extracted — `metadata.csv`
+- **Step 2 (done):** Scrollytelling infrastructure built — `index.html`, `config.js`, `assets/story.js`, `assets/style.css`
+- **Step 3 (in progress):** Fill in chapter titles/descriptions in `chapters.json` and per-photo captions in `metadata.csv`
+
+## File Structure
+```
+/
+├── index.html              # scrollytelling page (Mapbox + Scrollama)
+├── config.js               # Mapbox token, style URL, terrain settings
+├── map-markers.html        # original simple marker map (backup/reference)
+├── extract_photo_metadata.py
+└── assets/
+    ├── chapters.json       # chapter data — edit this to update the story
+    ├── metadata.csv        # EXIF data + description column for per-photo captions
+    ├── story.js            # scrollytelling engine (async, fetches chapters.json + metadata.csv)
+    ├── style.css           # layout, gallery, modal styles
+    └── jpg/                # 26 compressed JPGs used by the web page
+```
+
+## Architecture
+
+`index.html` loads `config.js` (globals) then `assets/story.js`. On init, `story.js` fetches `chapters.json` and `metadata.csv` in parallel:
+- `chapters.json` → title, subtitle, byline, chapters array
+- `metadata.csv` → filename → description lookup (used as lightbox caption)
+
+Images in `chapters.json` are bare filenames (e.g. `"IMG_3460.jpg"`). `story.js` prepends `assets/jpg/` for the `src` and pulls the `description` field from `metadata.csv` as the lightbox note.
+
+## To Edit the Story
+1. **Chapter structure** → edit `chapters.json`
+   - Each chapter: `id`, `title`, `description`, `alignment` ("left"/"right"/"centered"), `images` (array of filenames), `location` (`center`, `zoom`, `pitch`, `bearing`), `mapAnimation` ("flyTo")
+   - Images can be bare filename strings or `{ "src": "IMG_xxx.jpg", "note": "override caption" }`
+2. **Per-photo captions** → fill in the `description` column in `metadata.csv` (shown in lightbox when clicking a photo)
+3. **Map style / token** → edit `config.js`
+
+## Running Locally
+```bash
+python3 -m http.server 8000
+# open http://localhost:8000
+```
+Cannot open `index.html` directly via `file://` — the fetch() calls require a server.
 
 ## Data Pipeline
-
 ```
-photos/ (HEIC + JPG)
-  → extract_photo_metadata.py  →  metadata.csv
-  → manual grouping + chapter writing  →  chapters.json
-  → Mapbox scrollytelling template  →  index.html
+assets/selected/ (HEIC + JPG)
+  → extract_photo_metadata.py  →  assets/metadata.csv  (+ manual description column)
+  → manual grouping             →  assets/chapters.json
+  → index.html (story.js)       →  scrollytelling page
 ```
 
 ## Step 1: Metadata Extraction (`extract_photo_metadata.py`)
 
-Extracts EXIF data from all images in a folder into a CSV.
-
-**CSV columns:** `filename`, `type`, `lat`, `lon`, `altitude_m`, `camera_direction_deg`, `bearing_to_fuji_deg`, `distance_to_fuji_km`, `date_taken`, `time_taken`, `make`, `model`, `lens_model`, `focal_length_mm`, `f_number`, `exposure_time_s`, `iso`, `width_px`, `height_px`
+Extracts EXIF from all images in a folder into a CSV.
 
 **Key computed fields:**
-- `bearing_to_fuji_deg` — forward azimuth from photo location to Fuji summit (35.3606°N, 138.7274°E) using `atan2`
-- `distance_to_fuji_km` — Haversine distance to Fuji summit
-- `camera_direction_deg` — read directly from `GPSImgDirection` EXIF tag (iPhone 15 writes this natively)
+- `bearing_to_fuji_deg` — forward azimuth to Fuji summit (35.3606°N, 138.7274°E) via `atan2`
+- `distance_to_fuji_km` — Haversine distance
+- `camera_direction_deg` — from `GPSImgDirection` EXIF tag (iPhone 15 native)
 
-**Libraries:** `Pillow` + `pillow-heif`
-
-**GPS extraction approach:** `getexif()` returns only the main IFD. GPS and camera details live in sub-IFDs that must be read explicitly via `exif_data.get_ifd(tag)`:
+**GPS sub-IFD approach:** `getexif()` only returns the main IFD. GPS and Exif sub-IFDs must be read via `exif_data.get_ifd(tag)`:
 - `0x8769` — Exif sub-IFD (DateTimeOriginal, FocalLength, ISO, LensModel, …)
-- `0x8825` — GPS sub-IFD (GPSLatitude, GPSLongitude, GPSAltitude, GPSImgDirection, …)
+- `0x8825` — GPS sub-IFD (lat, lon, altitude, camera direction, …)
 
-This works for both JPEG and HEIC (via pillow-heif). The old approach of looking up `GPSInfo` as a key in the flat decoded dict did not work for either format.
+Works for both JPEG and HEIC (via `pillow-heif`). Looking up `GPSInfo` as a flat dict key does not work for either format.
 
-**Manual GPS overrides:** One photo had no EXIF GPS data and was patched directly in the CSV:
-- `IMG_7242.HEIC` — set to Narita Airport (35.7686°N, 140.3887°E); `camera_direction_deg` left blank as it cannot be derived without the original EXIF tag.
+**Manual GPS override:** `IMG_7242.HEIC` had no EXIF GPS — patched to Narita Airport (35.7686°N, 140.3887°E); `camera_direction_deg` left blank.
 
 **Usage:**
 ```bash
 python3 -m venv fuji_env && source fuji_env/bin/activate
 pip install Pillow pillow-heif
 python extract_photo_metadata.py ./assets/selected/
-# outputs metadata.csv inside the photos folder
 ```
 
-## Step 2: Chapter Grouping (manual + optional script)
-- Group photos by proximity (< ~50m apart = same location)
-- For each group: pick a hero photo, write a 1-line description, note the location name
-- Output: `chapters.json` with one object per chapter
+## Step 0: Simple Marker Map (reference)
+`map-markers.html` — Mapbox GL JS (`light-v11`), one arrow marker per photo rotated by `bearing_to_fuji_deg`, lightbox on click. All data embedded inline. Fuji summit marked with an inlined SVG mountain icon (36×36px, `#00449E`, CSS drop-shadow). Kept as a backup; not connected to `chapters.json`.
 
-## Step 3: Mapbox Scrollytelling
-- Template: https://github.com/mapbox/storytelling
-- Config: `satellite-v9` style, `terrain` layer enabled, `exaggeration: 1.5`
-- Each chapter sets `bearing` (toward Fuji) and `pitch` (45–60°) for cinematic feel
-- Markers: circular photo thumbnails instead of default pins
-
-## File Structure
-```
-/
-├── photos/             # original HEIC + JPG images
-├── extract_photo_metadata.py
-├── metadata.csv        # output of step 1
-├── chapters.json       # output of step 2
-└── index.html          # Mapbox scrollytelling page
-```
+## Multi-Image Gallery + Lightbox (adapted from kochi-highlight-map-2026)
+- Gallery: horizontal drag-to-scroll, snap-to-item, 200px fixed height
+- Lightbox: click any image → full-size modal with random polaroid tilt (±5°), caption below, click-anywhere or Escape to close
+- Reference implementation: `/Users/rasagy/Documents/GitHub/kochi-highlight-map-2026`

@@ -1,0 +1,136 @@
+{
+  "title": "Chasing Fuji",
+  "subtitle": "26 views of Mt. Fuji across 13 days in November 2023",
+  "byline": "By Rasagy Sharma",
+  "footer": "Built with Mapbox GL JS storytelling",
+  "chapters": [
+    {
+      "id": "overview",
+      "title": "Mt. Fuji",
+      "description": "An opening overview before the story begins.",
+      "alignment": "centered",
+      "hidden": false,
+      "images": [],
+      "location": {
+        "center": [138.7274, 35.3606],
+        "zoom": 8,
+        "pitch": 55,
+        "bearing": 0
+      },
+      "mapAnimation": "flyTo",
+      "rotateAnimation": false
+    },
+    {
+      "id": "chapter-1",
+      "title": "Chapter 1 Title",
+      "description": "Write a chapter description here.",
+      "alignment": "left",
+      "hidden": false,
+      "images": ["IMG_0304.jpg", "IMG_0324.jpg", "IMG_0364.jpg"],
+      "location": {
+        "center": [139.28, 33.96],
+        "zoom": 6,
+        "pitch": 45,
+        "bearing": 342
+      },
+      "mapAnimation": "flyTo",
+      "rotateAnimation": false
+    },
+    {
+      "id": "chapter-2",
+      "title": "Chapter 2 Title",
+      "description": "Write a chapter description here.",
+      "alignment": "right",
+      "hidden": false,
+      "images": ["IMG_E3407.jpg", "IMG_3460.jpg", "IMG_3472.jpg", "IMG_3483.jpg", "IMG_3550.jpg"],
+      "location": {
+        "center": [138.77, 35.50],
+        "zoom": 13,
+        "pitch": 50,
+        "bearing": 192
+      },
+      "mapAnimation": "flyTo",
+      "rotateAnimation": false
+    },
+    {
+      "id": "chapter-3",
+      "title": "Chapter 3 Title",
+      "description": "Write a chapter description here.",
+      "alignment": "left",
+      "hidden": false,
+      "images": ["IMG_E3582.jpg", "IMG_3585.jpg", "IMG_3623.jpg", "IMG_3632.jpg", "IMG_3655.jpg", "IMG_3660.jpg"],
+      "location": {
+        "center": [138.767, 35.512],
+        "zoom": 14,
+        "pitch": 55,
+        "bearing": 192
+      },
+      "mapAnimation": "flyTo",
+      "rotateAnimation": false
+    },
+    {
+      "id": "chapter-4",
+      "title": "Chapter 4 Title",
+      "description": "Write a chapter description here.",
+      "alignment": "right",
+      "hidden": false,
+      "images": ["IMG_3803.jpg", "IMG_3815.jpg", "IMG_3870.jpg", "IMG_3976.jpg"],
+      "location": {
+        "center": [138.754, 35.522],
+        "zoom": 14,
+        "pitch": 55,
+        "bearing": 187
+      },
+      "mapAnimation": "flyTo",
+      "rotateAnimation": false
+    },
+    {
+      "id": "chapter-5",
+      "title": "Chapter 5 Title",
+      "description": "Write a chapter description here.",
+      "alignment": "left",
+      "hidden": false,
+      "images": ["IMG_4160.jpg", "IMG_4229.jpg"],
+      "location": {
+        "center": [138.79, 35.48],
+        "zoom": 12,
+        "pitch": 50,
+        "bearing": 205
+      },
+      "mapAnimation": "flyTo",
+      "rotateAnimation": false
+    },
+    {
+      "id": "chapter-6",
+      "title": "Chapter 6 Title",
+      "description": "Write a chapter description here.",
+      "alignment": "right",
+      "hidden": false,
+      "images": ["IMG_6821.jpg", "IMG_6883.jpg"],
+      "location": {
+        "center": [138.64, 35.14],
+        "zoom": 11,
+        "pitch": 45,
+        "bearing": 17
+      },
+      "mapAnimation": "flyTo",
+      "rotateAnimation": false
+    },
+    {
+      "id": "chapter-7",
+      "title": "Chapter 7 Title",
+      "description": "Write a chapter description here.",
+      "alignment": "left",
+      "hidden": false,
+      "images": ["IMG_7242.jpg", "IMG_7278.jpg", "IMG_7284.jpg", "IMG_E7286.jpg"],
+      "location": {
+        "center": [138.65, 35.13],
+        "zoom": 8,
+        "pitch": 45,
+        "bearing": 26
+      },
+      "mapAnimation": "flyTo",
+      "rotateAnimation": false
+    }
+  ]
+}

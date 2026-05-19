@@ -3,193 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Mt. Fuji — Photo Locations</title>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.0/mapbox-gl.css" rel="stylesheet">
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.0/mapbox-gl.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-    #map { width: 100vw; height: 100vh; }
-
-    .fuji-marker {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      pointer-events: none;
-      user-select: none;
-    }
-    .fuji-marker .fuji-emoji {
-      font-size: 28px;
-      line-height: 1;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
-    }
-    .fuji-marker .fuji-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: #333;
-      letter-spacing: 0.03em;
-      margin-top: 2px;
-      text-shadow: 0 1px 3px rgba(255,255,255,0.9);
-      white-space: nowrap;
-    }
-
-    .arrow-marker {
-      cursor: pointer;
-      width: 22px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .arrow-marker svg {
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
-      transition: filter 0.15s;
-    }
-    .arrow-marker:hover svg {
-      filter: drop-shadow(0 3px 7px rgba(0,0,0,0.55));
-    }
-
-    /* Lightbox */
-    #lightbox {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.88);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #lightbox.hidden { display: none; }
-    #lightbox img {
-      max-width: 90vw;
-      max-height: 90vh;
-      object-fit: contain;
-      border-radius: 3px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-    }
-    #lightbox-close {
-      position: absolute;
-      top: 18px;
-      right: 22px;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 30px;
-      cursor: pointer;
-      line-height: 1;
-      opacity: 0.75;
-    }
-    #lightbox-close:hover { opacity: 1; }
-  </style>
+  <title>Chasing Fuji</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Syne:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+  <link href="assets/style.css" rel="stylesheet">
 </head>
 <body>
 
 <div id="map"></div>
-<div id="lightbox" class="hidden">
-  <button id="lightbox-close">✕</button>
-  <img id="lightbox-img" src="" alt="">
+
+<div id="story">
+  <div id="header"></div>
+  <main id="features"></main>
+  <footer id="footer"></footer>
 </div>
 
-<script>
-  mapboxgl.accessToken = 'pk.eyJ1IjoicmFzYWd5IiwiYSI6ImNtcGNoNzR4aTAxYjQycHF2bXlkbnVlaWgifQ.4EWcldWpl8POlV_ioMR3_Q';
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+<script src="https://unpkg.com/scrollama"></script>
+<script src="config.js"></script>
+<script src="assets/story.js"></script>
 
-  const PHOTOS = [
-    { filename: "IMG_0304.jpg", lat: 33.9575611, lon: 139.2819972, altitude_m: 10930.7, camera_dir: 334.7,  bearing_fuji: 342.15, distance_km: 164.05, date: "2023-11-01", time: "15:34:23" },
-    { filename: "IMG_0324.jpg", lat: 34.2199667, lon: 140.0003361, altitude_m: 8723.4,  camera_dir: 305.97, bearing_fuji: 317.86, distance_km: 172.04, date: "2023-11-01", time: "15:39:29" },
-    { filename: "IMG_0364.jpg", lat: 35.4359583, lon: 140.8010722, altitude_m: 3712.5,  camera_dir: 262.46, bearing_fuji: 268.05, distance_km: 188.14, date: "2023-11-01", time: "15:54:05" },
-    { filename: "IMG_3460.jpg", lat: 35.4987528, lon: 138.7661583, altitude_m: 851.3,   camera_dir: 133.7,  bearing_fuji: 192.89, distance_km: 15.76,  date: "2023-11-07", time: "16:47:38" },
-    { filename: "IMG_3472.jpg", lat: 35.4988283, lon: 138.7564383, altitude_m: 863.0,   camera_dir: 264.39, bearing_fuji: 189.72, distance_km: 15.59,  date: "2023-11-07", time: "16:51:11" },
-    { filename: "IMG_3483.jpg", lat: 35.5126639, lon: 138.7692722, altitude_m: 838.3,   camera_dir: 256.27, bearing_fuji: 192.66, distance_km: 17.33,  date: "2023-11-07", time: "17:05:05" },
-    { filename: "IMG_3550.jpg", lat: 35.5099194, lon: 138.7603917, altitude_m: 849.7,   camera_dir: 201.67, bearing_fuji: 190.21, distance_km: 16.87,  date: "2023-11-07", time: "22:45:39" },
-    { filename: "IMG_3585.jpg", lat: 35.5098833, lon: 138.7603306, altitude_m: 849.8,   camera_dir: 220.14, bearing_fuji: 190.2,  distance_km: 16.87,  date: "2023-11-08", time: "06:56:25" },
-    { filename: "IMG_3623.jpg", lat: 35.512775,  lon: 138.7673806, altitude_m: 839.2,   camera_dir: 182.79, bearing_fuji: 192.09, distance_km: 17.3,   date: "2023-11-08", time: "07:32:07" },
-    { filename: "IMG_3632.jpg", lat: 35.5127556, lon: 138.7665417, altitude_m: 829.2,   camera_dir: 188.88, bearing_fuji: 191.85, distance_km: 17.29,  date: "2023-11-08", time: "07:35:59" },
-    { filename: "IMG_3655.jpg", lat: 35.5128278, lon: 138.7666639, altitude_m: 835.1,   camera_dir: 188.81, bearing_fuji: 191.88, distance_km: 17.3,   date: "2023-11-08", time: "07:41:52" },
-    { filename: "IMG_3660.jpg", lat: 35.5128444, lon: 138.7666639, altitude_m: 840.4,   camera_dir: 192.37, bearing_fuji: 191.88, distance_km: 17.3,   date: "2023-11-08", time: "07:43:42" },
-    { filename: "IMG_3803.jpg", lat: 35.5244222, lon: 138.7627417, altitude_m: 834.9,   camera_dir: 189.77, bearing_fuji: 189.98, distance_km: 18.5,   date: "2023-11-08", time: "09:06:02" },
-    { filename: "IMG_3815.jpg", lat: 35.5244417, lon: 138.762725,  altitude_m: 842.2,   camera_dir: 187.86, bearing_fuji: 189.97, distance_km: 18.5,   date: "2023-11-08", time: "09:13:30" },
-    { filename: "IMG_3870.jpg", lat: 35.5227556, lon: 138.7456667, altitude_m: 844.4,   camera_dir: 186.45, bearing_fuji: 185.25, distance_km: 18.11,  date: "2023-11-08", time: "09:41:34" },
-    { filename: "IMG_3976.jpg", lat: 35.522475,  lon: 138.7452861, altitude_m: 838.9,   camera_dir: 184.45, bearing_fuji: 185.15, distance_km: 18.07,  date: "2023-11-08", time: "10:01:13" },
-    { filename: "IMG_4160.jpg", lat: 35.5034861, lon: 138.7769472, altitude_m: 1092.1,  camera_dir: 191.31, bearing_fuji: 195.79, distance_km: 16.51,  date: "2023-11-08", time: "11:59:54" },
-    { filename: "IMG_4229.jpg", lat: 35.4495694, lon: 138.8024889, altitude_m: 970.4,   camera_dir: 128.07, bearing_fuji: 214.55, distance_km: 12.01,  date: "2023-11-08", time: "14:19:28" },
-    { filename: "IMG_6821.jpg", lat: 35.1392133, lon: 138.6416633, altitude_m: 16.0,    camera_dir: 134.89, bearing_fuji: 17.53,  distance_km: 25.82,  date: "2023-11-13", time: "14:32:00" },
-    { filename: "IMG_6883.jpg", lat: 35.3658167, lon: 139.3342278, altitude_m: 28.0,    camera_dir: 47.12,  bearing_fuji: 269.57, distance_km: 55.03,  date: "2023-11-13", time: "14:53:33" },
-    { filename: "IMG_7242.jpg", lat: 35.7686,    lon: 140.3887,    altitude_m: null,    camera_dir: null,   bearing_fuji: 244.14, distance_km: 134.98, date: "2023-11-14", time: "14:40:08" },
-    { filename: "IMG_7278.jpg", lat: 35.1414833, lon: 138.7412111, altitude_m: 10998.9, camera_dir: 358.06, bearing_fuji: 357.06, distance_km: 24.4,   date: "2023-11-14", time: "14:56:34" },
-    { filename: "IMG_7284.jpg", lat: 35.1361167, lon: 138.6311806, altitude_m: 11123.1, camera_dir: 15.03,  bearing_fuji: 19.26,  distance_km: 26.45,  date: "2023-11-14", time: "14:57:27" },
-    { filename: "IMG_E3407.jpg", lat: 35.5041556, lon: 138.8150167, altitude_m: 744.3,  camera_dir: 267.58, bearing_fuji: 206.47, distance_km: 17.83,  date: "2023-11-07", time: "16:15:23" },
-    { filename: "IMG_E3582.jpg", lat: 35.5099056, lon: 138.760375,  altitude_m: 848.0,  camera_dir: 195.4,  bearing_fuji: 190.21, distance_km: 16.87,  date: "2023-11-08", time: "06:55:04" },
-    { filename: "IMG_E7286.jpg", lat: 35.1315222, lon: 138.586975,  altitude_m: 11271.9, camera_dir: 22.85, bearing_fuji: 26.55,  distance_km: 28.49,  date: "2023-11-14", time: "14:57:45" },
-  ];
-
-  function makeArrowEl(bearingDeg) {
-    const el = document.createElement('div');
-    el.className = 'arrow-marker';
-    // Rotation goes on a child — Mapbox overwrites transform on the root element for positioning
-    const inner = document.createElement('div');
-    inner.style.transform = `rotate(${bearingDeg}deg)`;
-    inner.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="30" viewBox="0 0 22 30">
-      <polygon points="11,1 21,29 11,22 1,29"
-        fill="#e84b35" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
-    </svg>`;
-    el.appendChild(inner);
-    return el;
-  }
-
-  // Lightbox
-  const lightbox   = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightbox-img');
-
-  function openLightbox(filename) {
-    lightboxImg.src = `./assets/jpg/${filename}`;
-    lightboxImg.alt = filename;
-    lightbox.classList.remove('hidden');
-  }
-  function closeLightbox() {
-    lightbox.classList.add('hidden');
-    lightboxImg.src = '';
-  }
-
-  window.openLightbox = openLightbox;
-
-  document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
-
-  // Map
-  const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/light-v11',
-    center: [138.7, 35.5],
-    zoom: 8,
-  });
-
-  map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-  map.on('load', () => {
-    const lons = PHOTOS.map(p => p.lon);
-    const lats = PHOTOS.map(p => p.lat);
-    map.fitBounds(
-      [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
-      { padding: 70, duration: 0 }
-    );
-
-    // Fuji summit marker
-    const fujiEl = document.createElement('div');
-    fujiEl.className = 'fuji-marker';
-    fujiEl.innerHTML = `<span class="fuji-emoji">🗻</span>`;
-    new mapboxgl.Marker({ element: fujiEl, anchor: 'bottom' })
-      .setLngLat([138.7274, 35.3606])
-      .addTo(map);
-
-    PHOTOS.forEach(photo => {
-      const el = makeArrowEl(photo.bearing_fuji);
-      el.addEventListener('click', () => openLightbox(photo.filename));
-      new mapboxgl.Marker({ element: el, anchor: 'center' })
-        .setLngLat([photo.lon, photo.lat])
-        .addTo(map);
-    });
-  });
-</script>
 </body>
 </html>

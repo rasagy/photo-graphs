@@ -18,9 +18,7 @@
       pointer-events: none;
       user-select: none;
     }
-    .fuji-marker .fuji-emoji {
-      font-size: 28px;
-      line-height: 1;
+    .fuji-marker svg {
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
     }
     .fuji-marker .fuji-label {
@@ -130,7 +128,7 @@
     inner.style.transform = `rotate(${bearingDeg}deg)`;
     inner.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="30" viewBox="0 0 22 30">
       <polygon points="11,1 21,29 11,22 1,29"
-        fill="#e84b35" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
+        fill="#00449E" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
     </svg>`;
     el.appendChild(inner);
     return el;
@@ -177,7 +175,15 @@
     // Fuji summit marker
     const fujiEl = document.createElement('div');
     fujiEl.className = 'fuji-marker';
-    fujiEl.innerHTML = `<span class="fuji-emoji">🗻</span>`;
+    fujiEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 512 512">
+      <path fill="#00449E" d="M431.793,340.539c-22.579-24.188-46.288-56.09-65.735-96.994c-2.253-4.748-4.498-9.567-6.592-14.55
+        c-13.578-31.659-24.589-68.388-30.937-110.658l-1.53-10.289H184.994l-1.522,10.289c-6.35,42.348-17.36,79.077-30.945,110.736
+        c-2.166,4.984-4.34,9.81-6.584,14.472c-19.769,41.548-43.879,73.693-66.709,98.038c-21.049,22.343-41.061,38.094-55.769,48.14
+        c-7.314,4.984-13.341,8.601-17.438,10.932c-2.009,1.201-3.618,2.009-4.662,2.566l-1.122,0.565L0,403.952h31.502h13.586h421.826
+        h8.036H512C511.757,403.787,473.584,385.305,431.793,340.539z M328.528,263.471l-36.329-44.279l-36.242,44.2l-36.242-44.2
+        l-36.243,44.2l-12.863-15.672c15.108-33.033,27.57-71.441,35.042-115.563h100.777c7.393,44.122,19.848,82.53,34.955,115.563
+        L328.528,263.471z"/>
+    </svg>`;
     new mapboxgl.Marker({ element: fujiEl, anchor: 'bottom' })
       .setLngLat([138.7274, 35.3606])
       .addTo(map);
