@@ -56,8 +56,11 @@ h6 {
   justify-content: center;
   text-align: center;
   padding: 4rem 2rem;
-  background: #f5f0eb;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  background-color: #c8dde8;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #b8d4e2 0%, #cce0ea 40%, #daedf5 75%, #c8dde8 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 68, 0.18);
 }
 
 #hero-stack {
@@ -122,6 +125,7 @@ h6 {
 #header h1 {
   margin: 0;
   font-size: clamp(2rem, 5vw, 3.2rem);
+  color: #00449E;
 }
 
 #header h2 {
@@ -129,12 +133,13 @@ h6 {
   font-size: clamp(1rem, 2vw, 1.3rem);
   font-weight: 500;
   font-style: italic;
+  color: #1a4a6e;
 }
 
 #header p {
   margin: 0.7rem 0 0;
   font-size: clamp(0.9rem, 1.5vw, 1.05rem);
-  color: #555;
+  color: #2c5570;
 }
 
 #story {
