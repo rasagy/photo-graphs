@@ -1,5 +1,8 @@
 # Fuji-san Scrollytelling Map
 
+## Step 0: Simple marker map (done)
+`map-markers.html` — Mapbox GL JS (`light-v11`) with one arrow marker per photo, rotated by `bearing_to_fuji_deg`, opening a lightbox on click. Data sourced from `metadata_slim.csv` (embedded inline). Fuji summit marked with 🗻.
+
 ## Project Goal
 Build a scrollytelling map showing 23 iPhone 15 photos of Mt Fuji, each pinned to where it was taken, with the direction to Fuji's summit shown per location.
 

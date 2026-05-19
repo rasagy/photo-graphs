@@ -11,6 +11,28 @@
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
     #map { width: 100vw; height: 100vh; }
 
+    .fuji-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+      user-select: none;
+    }
+    .fuji-marker .fuji-emoji {
+      font-size: 28px;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+    }
+    .fuji-marker .fuji-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #333;
+      letter-spacing: 0.03em;
+      margin-top: 2px;
+      text-shadow: 0 1px 3px rgba(255,255,255,0.9);
+      white-space: nowrap;
+    }
+
     .arrow-marker {
       cursor: pointer;
       width: 22px;
@@ -26,52 +48,6 @@
     .arrow-marker:hover svg {
       filter: drop-shadow(0 3px 7px rgba(0,0,0,0.55));
     }
-
-    .cluster-marker {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: #e84b35;
-      color: white;
-      font-size: 13px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      border: 2.5px solid white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
-      transition: transform 0.15s;
-    }
-    .cluster-marker:hover { transform: scale(1.1); }
-
-    .photo-popup { padding: 4px 2px 2px; }
-    .photo-popup h4 {
-      font-size: 11px;
-      color: #888;
-      margin-bottom: 8px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .photo-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 72px);
-      gap: 5px;
-    }
-    .photo-thumb {
-      width: 72px;
-      height: 72px;
-      object-fit: cover;
-      border-radius: 4px;
-      cursor: pointer;
-      display: block;
-      transition: opacity 0.15s;
-    }
-    .photo-thumb:hover { opacity: 0.75; }
-
-    /* Mapbox popup tweak */
-    .mapboxgl-popup-content { padding: 12px 14px 10px; }
 
     /* Lightbox */
     #lightbox {
@@ -146,35 +122,6 @@
     { filename: "IMG_E7286.jpg", lat: 35.1315222, lon: 138.586975,  altitude_m: 11271.9, camera_dir: 22.85, bearing_fuji: 26.55,  distance_km: 28.49,  date: "2023-11-14", time: "14:57:45" },
   ];
 
-  function haversineKm(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat / 2) ** 2
-      + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  }
-
-  // Greedy proximity grouping — photos within 50 m of the seed become one group
-  function groupByProximity(photos, radiusKm = 0.05) {
-    const assigned = new Set();
-    const groups = [];
-    for (let i = 0; i < photos.length; i++) {
-      if (assigned.has(i)) continue;
-      const group = [photos[i]];
-      assigned.add(i);
-      for (let j = i + 1; j < photos.length; j++) {
-        if (assigned.has(j)) continue;
-        if (haversineKm(photos[i].lat, photos[i].lon, photos[j].lat, photos[j].lon) < radiusKm) {
-          group.push(photos[j]);
-          assigned.add(j);
-        }
-      }
-      groups.push(group);
-    }
-    return groups;
-  }
-
   function makeArrowEl(bearingDeg) {
     const el = document.createElement('div');
     el.className = 'arrow-marker';
@@ -187,23 +134,6 @@
     </svg>`;
     el.appendChild(inner);
     return el;
-  }
-
-  function makeClusterEl(count) {
-    const el = document.createElement('div');
-    el.className = 'cluster-marker';
-    el.textContent = count;
-    return el;
-  }
-
-  function buildThumbnailHTML(photos) {
-    const thumbs = photos
-      .map(p => `<img class="photo-thumb" src="./assets/jpg/${p.filename}" alt="${p.filename}" onclick="openLightbox('${p.filename}')">`)
-      .join('');
-    return `<div class="photo-popup">
-      <h4>${photos.length} photos here</h4>
-      <div class="photo-grid">${thumbs}</div>
-    </div>`;
   }
 
   // Lightbox
@@ -234,9 +164,9 @@
     zoom: 8,
   });
 
-  map.on('load', () => {
-    const groups = groupByProximity(PHOTOS);
+  map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
+  map.on('load', () => {
     const lons = PHOTOS.map(p => p.lon);
     const lats = PHOTOS.map(p => p.lat);
     map.fitBounds(
@@ -244,26 +174,20 @@
       { padding: 70, duration: 0 }
     );
 
-    groups.forEach(group => {
-      const centLat = group.reduce((s, p) => s + p.lat, 0) / group.length;
-      const centLon = group.reduce((s, p) => s + p.lon, 0) / group.length;
+    // Fuji summit marker
+    const fujiEl = document.createElement('div');
+    fujiEl.className = 'fuji-marker';
+    fujiEl.innerHTML = `<span class="fuji-emoji">🗻</span>`;
+    new mapboxgl.Marker({ element: fujiEl, anchor: 'bottom' })
+      .setLngLat([138.7274, 35.3606])
+      .addTo(map);
 
-      if (group.length === 1) {
-        const photo = group[0];
-        const el = makeArrowEl(photo.bearing_fuji);
-        el.addEventListener('click', () => openLightbox(photo.filename));
-        new mapboxgl.Marker({ element: el, anchor: 'center' })
-          .setLngLat([photo.lon, photo.lat])
-          .addTo(map);
-      } else {
-        const el = makeClusterEl(group.length);
-        const popup = new mapboxgl.Popup({ offset: 22, closeButton: true, maxWidth: '260px' })
-          .setHTML(buildThumbnailHTML(group));
-        new mapboxgl.Marker({ element: el, anchor: 'center' })
-          .setLngLat([centLon, centLat])
-          .setPopup(popup)
-          .addTo(map);
-      }
+    PHOTOS.forEach(photo => {
+      const el = makeArrowEl(photo.bearing_fuji);
+      el.addEventListener('click', () => openLightbox(photo.filename));
+      new mapboxgl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([photo.lon, photo.lat])
+        .addTo(map);
     });
   });
 </script>
