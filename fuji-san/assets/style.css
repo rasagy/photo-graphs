@@ -72,8 +72,8 @@ h6 {
   top: 16px;
   left: 24px;
   background: #fff;
-  padding: 7px;
-  border-radius: 3px;
+  padding: 4px;
+  border-radius: 7px;
   box-shadow:
     0 12px 36px rgba(0, 0, 0, 0.30),
     0 4px 10px rgba(0, 0, 0, 0.18);
@@ -85,22 +85,37 @@ h6 {
   width: 100px;
   height: 134px;
   object-fit: cover;
-  border-radius: 1px;
+  border-radius: 3px;
 }
 
 .hero-card--back {
-  transform: rotate(-11deg) translate(-6px, 5px);
   z-index: 1;
+  animation: hero-spread-back 2.2s ease-out .4s both;
 }
 
 .hero-card--mid {
-  transform: rotate(7deg) translate(4px, 3px);
   z-index: 2;
+  animation: hero-spread-mid 2.2s ease-out .4s both;
 }
 
 .hero-card--front {
-  transform: rotate(-1.5deg);
   z-index: 3;
+  animation: hero-rise-front 2s ease-out .6s both;
+}
+
+@keyframes hero-spread-back {
+  from { transform: rotate(0deg) translate(0px, 0px); }
+  to   { transform: rotate(-11deg) translate(-75px, 5px); }
+}
+
+@keyframes hero-spread-mid {
+  from { transform: rotate(0deg) translate(0px, 0px); }
+  to   { transform: rotate(8deg) translate(64px, 0px); }
+}
+
+@keyframes hero-rise-front {
+  from { transform: rotate(-1.5deg) translateY(10px); }
+  to   { transform: rotate(-1.5deg) translateY(0px); }
 }
 
 #header h1 {
