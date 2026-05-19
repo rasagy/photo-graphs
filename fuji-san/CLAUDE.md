@@ -9,6 +9,21 @@ A Mapbox GL JS scrollytelling page for 26 iPhone 15 photos of Mt. Fuji, each pin
 - **Step 2 (done):** Scrollytelling infrastructure built — `index.html`, `config.js`, `assets/story.js`, `assets/style.css`
 - **Step 3 (in progress):** Fill in chapter titles/descriptions in `chapters.json` and per-photo captions in `metadata.csv`
 
+## Visual Design (current)
+
+### Hero section (`#header`)
+- Sits above `#map` in the DOM; `min-height: 50vh`, warm cream background (`#f5f0eb`), bottom shadow
+- The fixed map is already visible in the lower half of the viewport on load
+- Contains a `#hero-stack`: 3 static thumbnail photos as stacked polaroid-style cards
+  - Cards start flat/stacked on load, then animate: back two spread left/right (2.2s ease-out), front card rises slightly (2s ease-out)
+  - Current photos: `IMG_0364.jpg` (back-left), `IMG_7242.jpg` (mid-right), `IMG_3623.jpg` (front)
+  - To change photos: edit the `<figure>` elements in `index.html` `#header`
+
+### Chapter step cards (`.step`)
+- Dark glassmorphism: `rgba(0,0,0,0.22)` background, `blur(20px) saturate(160%)` backdrop filter
+- Border: `1px solid rgba(100,100,100,0.45)` + inset top highlight for glass shine effect
+- White text (`color: #f8f8f8`), `border-radius: 14px`
+
 ## File Structure
 ```
 /
