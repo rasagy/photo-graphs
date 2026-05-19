@@ -45,44 +45,97 @@ h6 {
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
 }
 
+#header {
+  position: relative;
+  z-index: 20;
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f5f0eb;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+#hero-stack {
+  position: relative;
+  width: 160px;
+  height: 180px;
+  margin: 0 auto 2.2rem;
+}
+
+.hero-card {
+  position: absolute;
+  margin: 0;
+  top: 16px;
+  left: 24px;
+  background: #fff;
+  padding: 7px;
+  border-radius: 3px;
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.30),
+    0 4px 10px rgba(0, 0, 0, 0.18);
+  transform-origin: center center;
+}
+
+.hero-card img {
+  display: block;
+  width: 100px;
+  height: 134px;
+  object-fit: cover;
+  border-radius: 1px;
+}
+
+.hero-card--back {
+  transform: rotate(-11deg) translate(-6px, 5px);
+  z-index: 1;
+}
+
+.hero-card--mid {
+  transform: rotate(7deg) translate(4px, 3px);
+  z-index: 2;
+}
+
+.hero-card--front {
+  transform: rotate(-1.5deg);
+  z-index: 3;
+}
+
+#header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+}
+
+#header h2 {
+  margin: 0.8rem 0 0;
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  font-weight: 500;
+  font-style: italic;
+}
+
+#header p {
+  margin: 0.7rem 0 0;
+  font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+  color: #555;
+}
+
 #story {
   position: relative;
   z-index: 10;
   pointer-events: none;
 }
 
-#header,
 #footer,
 #features {
   width: 100%;
   pointer-events: none;
 }
 
-#header > *,
 #footer > *,
 #features > * {
   pointer-events: auto;
-}
-
-#header {
-  text-align: center;
-  padding: 3vh 2rem 1vh;
-}
-
-#header h1 {
-  margin: 0;
-  font-size: 2rem;
-}
-
-#header h2 {
-  margin: 0.6rem 0 0;
-  font-size: 1.1rem;
-  font-weight: 500;
-  font-style: italic;
-}
-
-#header p {
-  margin-top: 0.7rem;
 }
 
 #footer {
@@ -284,10 +337,6 @@ body.modal-open {
 }
 
 @media (max-width: 700px) {
-  #header {
-    padding-top: 2vh;
-  }
-
   .step {
     margin-bottom: 35vh;
   }
