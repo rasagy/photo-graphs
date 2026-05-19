@@ -29,7 +29,7 @@
       "images": ["IMG_0304.jpg", "IMG_0324.jpg", "IMG_0364.jpg"],
       "location": {
         "center": [138.99777, 34.46157],
-        "zoom": 7,
+        "zoom": 6.5,
         "pitch": 0,
         "bearing": -20
       },
@@ -60,9 +60,9 @@
       "hidden": false,
       "images": ["IMG_3472.jpg", "IMG_3483.jpg", "IMG_3550.jpg"],
       "location": {
-        "center": [138.76455, 35.47879],
+        "center": [138.76483, 35.51819],
         "zoom": 11.5,
-        "pitch": 67,
+        "pitch": 60,
         "bearing": -168
       },
       "mapAnimation": "flyTo",
@@ -92,10 +92,10 @@
       "hidden": false,
       "images": ["IMG_3623.jpg", "IMG_3632.jpg", "IMG_3655.jpg", "IMG_3660.jpg"],
       "location": {
-        "center": [138.74856, 35.48426],
+        "center": [138.74961, 35.47640],
         "zoom": 12,
-        "pitch": 71,
-        "bearing": -175
+        "pitch": 74,
+        "bearing": 141
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
@@ -140,10 +140,10 @@
       "hidden": false,
       "images": ["IMG_7242.jpg", "IMG_7278.jpg", "IMG_7284.jpg", "IMG_E7286.jpg"],
       "location": {
-        "center": [138.58394, 35.07485],
+        "center": [138.85462, 35.10969],
         "zoom": 8,
-        "pitch": 67,
-        "bearing": 19
+        "pitch": 78,
+        "bearing": 10
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
