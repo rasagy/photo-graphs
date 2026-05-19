@@ -91,38 +91,35 @@ def distance_to_fuji_km(lat, lon):
     return round(2 * R * math.asin(math.sqrt(a)), 2)
 
 
+_EXIF_IFD_TAG = 0x8769  # Exif sub-IFD (focal length, ISO, etc.)
+_GPS_IFD_TAG  = 0x8825  # GPS sub-IFD
+
+
 def parse_exif(img):
-    """Return a flat dict of decoded EXIF tags from a PIL image.
-    Handles both JPEG (_getexif) and HEIC (getexif) formats."""
-    raw = None
+    """Return a flat dict of decoded EXIF tags, merging main IFD + Exif sub-IFD."""
     try:
-        # HEIC via pillow-heif uses the modern getexif() interface
         exif_data = img.getexif()
-        if exif_data:
-            raw = dict(exif_data)
+    except Exception:
+        return {}
+    if not exif_data:
+        return {}
+    flat = {TAGS.get(k, str(k)): v for k, v in exif_data.items()}
+    # Merge Exif sub-IFD (DateTimeOriginal, FocalLength, ISO, LensModel, …)
+    try:
+        exif_ifd = exif_data.get_ifd(_EXIF_IFD_TAG)
+        flat.update({TAGS.get(k, str(k)): v for k, v in exif_ifd.items()})
     except Exception:
         pass
-    if not raw:
-        try:
-            # JPEG fallback
-            raw = img._getexif()
-        except Exception:
-            pass
-    if not raw:
-        return {}
-    return {TAGS.get(k, str(k)): v for k, v in raw.items()}
+    return flat
 
 
-def parse_gps_info(exif):
-    """Decode the nested GPSInfo dict into a flat dict with named keys.
-    Handles both JPEG (nested dict) and HEIC (IFD object) formats."""
-    gps_raw = exif.get("GPSInfo")
-    if not gps_raw:
-        return {}
+def parse_gps_info(img):
+    """Return a flat GPS dict from the GPS sub-IFD of the image."""
     try:
-        # HEIC: GPSInfo is an IFD object — iterate its items directly
-        return {GPSTAGS.get(k, str(k)): v for k, v in gps_raw.items()}
-    except AttributeError:
+        exif_data = img.getexif()
+        gps_ifd = exif_data.get_ifd(_GPS_IFD_TAG)
+        return {GPSTAGS.get(k, str(k)): v for k, v in gps_ifd.items()}
+    except Exception:
         return {}
 
 
@@ -195,7 +192,7 @@ def extract_metadata(filepath):
                     result["date_taken"] = dt_str
 
             # ── GPS ───────────────────────────────────────────────────────
-            gps = parse_gps_info(exif)
+            gps = parse_gps_info(img)
             if not gps:
                 print(f"  ⚠  No GPS data:  {path.name}")
                 return result
