@@ -44,10 +44,10 @@
       "hidden": false,
       "images": ["IMG_E3407.jpg", "IMG_3460.jpg"],
       "location": {
-        "center": [138.81470, 35.56198],
-        "zoom": 11,
-        "pitch": 50,
-        "bearing": -144
+        "center": [139.12833, 35.66994],
+        "zoom": 9.15,
+        "pitch": 55,
+        "bearing": -114
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
@@ -56,14 +56,14 @@
       "id": "chapter-3",
       "title": "Night",
       "description": "Write a chapter description here.",
-      "alignment": "left",
+      "alignment": "centered",
       "hidden": false,
       "images": ["IMG_3472.jpg", "IMG_3483.jpg", "IMG_3550.jpg"],
       "location": {
-        "center": [138.767, 35.512],
-        "zoom": 9,
-        "pitch": 55,
-        "bearing": 192
+        "center": [138.76455, 35.47879],
+        "zoom": 11.5,
+        "pitch": 67,
+        "bearing": -168
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
@@ -72,14 +72,14 @@
       "id": "chapter-4",
       "title": "Morning",
       "description": "Write a chapter description here.",
-      "alignment": "right",
+      "alignment": "left",
       "hidden": false,
       "images": ["IMG_E3582.jpg", "IMG_3585.jpg"],
       "location": {
-        "center": [138.754, 35.522],
-        "zoom": 9,
-        "pitch": 55,
-        "bearing": 187
+        "center": [138.75627, 35.45212],
+        "zoom": 12.5,
+        "pitch": 75,
+        "bearing": -158
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
@@ -88,46 +88,62 @@
       "id": "chapter-5",
       "title": "Walk & bus ride",
       "description": "Write a chapter description here.",
-      "alignment": "left",
+      "alignment": "right",
       "hidden": false,
       "images": ["IMG_3623.jpg", "IMG_3632.jpg", "IMG_3655.jpg", "IMG_3660.jpg"],
       "location": {
-        "center": [138.79, 35.48],
-        "zoom": 9,
-        "pitch": 50,
-        "bearing": 205
+        "center": [138.74856, 35.48426],
+        "zoom": 12,
+        "pitch": 71,
+        "bearing": -175
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
     },
     {
       "id": "chapter-6",
-      "title": "Chapter 6 Title",
+      "title": "Around the Lake Kawaguchi",
       "description": "Write a chapter description here.",
-      "alignment": "right",
+      "alignment": "left",
       "hidden": false,
-      "images": ["IMG_6821.jpg", "IMG_6883.jpg"],
+      "images": ["IMG_3803.jpg", "IMG_3815.jpg", "IMG_3870.jpg", "IMG_3976.jpg"],
       "location": {
-        "center": [138.64, 35.14],
-        "zoom": 11,
-        "pitch": 45,
-        "bearing": 17
+        "center": [138.74755, 35.46856],
+        "zoom": 12.2,
+        "pitch": 69,
+        "bearing": -142
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
     },
     {
       "id": "chapter-7",
-      "title": "Chapter 7 Title",
+      "title": "Clouds & snow",
       "description": "Write a chapter description here.",
-      "alignment": "left",
+      "alignment": "center",
+      "hidden": false,
+      "images": ["IMG_4160.jpg", "IMG_4229.jpg", "IMG_6821.jpg", "IMG_6883.jpg"],
+      "location": {
+        "center": [138.81298, 35.08227],
+        "zoom": 9.3,
+        "pitch": 55,
+        "bearing": -16
+      },
+      "mapAnimation": "flyTo",
+      "rotateAnimation": false
+    },
+    {
+      "id": "chapter-8",
+      "title": "A spectacular farewell",
+      "description": "Write a chapter description here.",
+      "alignment": "centered",
       "hidden": false,
       "images": ["IMG_7242.jpg", "IMG_7278.jpg", "IMG_7284.jpg", "IMG_E7286.jpg"],
       "location": {
-        "center": [138.65, 35.13],
+        "center": [138.58394, 35.07485],
         "zoom": 8,
-        "pitch": 45,
-        "bearing": 26
+        "pitch": 67,
+        "bearing": 19
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
