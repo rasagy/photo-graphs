@@ -18,6 +18,26 @@ function alignClass(alignment) {
   return "centered";
 }
 
+function formatModalTime(timeStr) {
+  if (!timeStr) return "";
+  var parts = timeStr.split(":");
+  var h = parseInt(parts[0], 10);
+  var m = parts[1] || "00";
+  var ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return h + ":" + m + " " + ampm;
+}
+
+function formatModalDate(dateStr) {
+  if (!dateStr) return "";
+  var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var parts = dateStr.split("-");
+  var day = parseInt(parts[2], 10);
+  var month = months[parseInt(parts[1], 10) - 1];
+  var year = parts[0];
+  return day + " " + month + ", " + year;
+}
+
 function createImageModal() {
   var modal = document.createElement("div");
   modal.id = "image-modal";
@@ -28,14 +48,22 @@ function createImageModal() {
   var card = document.createElement("div");
   card.id = "image-modal-card";
 
+  var inner = document.createElement("div");
+  inner.id = "image-modal-inner";
+  card.appendChild(inner);
+
   var image = document.createElement("img");
   image.id = "image-modal-img";
   image.alt = "";
-  card.appendChild(image);
+  inner.appendChild(image);
+
+  var meta = document.createElement("div");
+  meta.id = "image-modal-meta";
+  inner.appendChild(meta);
 
   var note = document.createElement("p");
   note.id = "image-modal-note";
-  card.appendChild(note);
+  inner.appendChild(note);
 
   modal.appendChild(card);
 
@@ -44,16 +72,38 @@ function createImageModal() {
     document.body.classList.remove("modal-open");
     image.src = "";
     image.alt = "";
+    meta.innerHTML = "";
     note.textContent = "";
+    inner.style.maxWidth = "";
     card.style.removeProperty("--polaroid-tilt");
   }
 
-  function openModal(src, alt, imageNote) {
+  function openModal(src, alt, imageNote, imageMeta) {
     var tilt = (Math.random() * 10 - 5).toFixed(2) + "deg";
     card.style.setProperty("--polaroid-tilt", tilt);
+    inner.style.maxWidth = "";
     image.src = src;
     image.alt = alt || "Fullscreen image";
     note.textContent = imageNote || "";
+    meta.innerHTML = "";
+    function clampToImageWidth() {
+      if (image.offsetWidth > 0) inner.style.maxWidth = image.offsetWidth + "px";
+    }
+    image.onload = clampToImageWidth;
+    requestAnimationFrame(clampToImageWidth);
+    if (imageMeta && imageMeta.location) {
+      var locEl = document.createElement("em");
+      locEl.textContent = imageMeta.location;
+      meta.appendChild(locEl);
+      var timeStr = formatModalTime(imageMeta.timeTaken);
+      var dateStr = formatModalDate(imageMeta.dateTaken);
+      if (timeStr || dateStr) {
+        var sep = document.createTextNode(" · ");
+        meta.appendChild(sep);
+        var dt = [timeStr, dateStr].filter(Boolean).join(" · ");
+        meta.appendChild(document.createTextNode(dt));
+      }
+    }
     modal.classList.add("is-open");
     document.body.classList.add("modal-open");
   }
@@ -183,7 +233,7 @@ async function init() {
     return;
   }
 
-  // Build filename → { description, lat, lon, bearingToFuji } lookup
+  // Build filename → { description, lat, lon, bearingToFuji, location, dateTaken, timeTaken } lookup
   var metaLookup = {};
   var csvLines = metadataCsv.trim().split("\n");
   if (csvLines.length > 1) {
@@ -192,6 +242,9 @@ async function init() {
     var lonIdx = headers.indexOf("lon");
     var bearingIdx = headers.indexOf("bearing_to_fuji_deg");
     var descIdx = headers.indexOf("description");
+    var locationIdx = headers.indexOf("location");
+    var dateIdx = headers.indexOf("date_taken");
+    var timeIdx = headers.indexOf("time_taken");
     csvLines.slice(1).forEach(function (line) {
       var parts = parseCsvLine(line);
       var filename = parts[0] ? parts[0].trim() : "";
@@ -200,7 +253,10 @@ async function init() {
         description: descIdx >= 0 ? (parts[descIdx] || "").trim() : "",
         lat: latIdx >= 0 ? parseFloat(parts[latIdx]) : NaN,
         lon: lonIdx >= 0 ? parseFloat(parts[lonIdx]) : NaN,
-        bearingToFuji: bearingIdx >= 0 ? parseFloat(parts[bearingIdx]) : NaN
+        bearingToFuji: bearingIdx >= 0 ? parseFloat(parts[bearingIdx]) : NaN,
+        location: locationIdx >= 0 ? (parts[locationIdx] || "").trim() : "",
+        dateTaken: dateIdx >= 0 ? (parts[dateIdx] || "").trim() : "",
+        timeTaken: timeIdx >= 0 ? (parts[timeIdx] || "").trim() : ""
       };
     });
   }
@@ -262,6 +318,9 @@ async function init() {
         galleryImage.alt = (record.title || record.id) + " photo " + (imageIndex + 1);
         galleryImage.loading = "lazy";
         galleryImage.dataset.note = note;
+        galleryImage.dataset.location = meta.location || "";
+        galleryImage.dataset.dateTaken = meta.dateTaken || "";
+        galleryImage.dataset.timeTaken = meta.timeTaken || "";
         figure.appendChild(galleryImage);
         gallery.appendChild(figure);
       });
@@ -274,6 +333,9 @@ async function init() {
       singleImage.src = "assets/jpg/" + filename;
       singleImage.alt = record.title || record.id;
       singleImage.dataset.note = meta.description || record.imageNote || "";
+      singleImage.dataset.location = meta.location || "";
+      singleImage.dataset.dateTaken = meta.dateTaken || "";
+      singleImage.dataset.timeTaken = meta.timeTaken || "";
       container.appendChild(singleImage);
     }
 
@@ -291,7 +353,12 @@ async function init() {
   Array.prototype.forEach.call(features.querySelectorAll("img"), function (img) {
     img.classList.add("zoomable-image");
     img.addEventListener("click", function () {
-      imageModal.openModal(img.src, img.alt, img.dataset.note || "");
+      var imageMeta = {
+        location: img.dataset.location || "",
+        dateTaken: img.dataset.dateTaken || "",
+        timeTaken: img.dataset.timeTaken || ""
+      };
+      imageModal.openModal(img.src, img.alt, img.dataset.note || "", imageMeta);
     });
   });
 

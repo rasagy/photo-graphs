@@ -315,6 +315,11 @@ body.modal-open {
     inset 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
+#image-modal-inner {
+  width: fit-content;
+  max-width: min(84vw, 1000px);
+}
+
 #image-modal img {
   max-width: min(84vw, 1000px);
   max-height: 72vh;
@@ -324,14 +329,34 @@ body.modal-open {
   display: block;
 }
 
+#image-modal-meta {
+  margin: 0.7rem 0 0;
+  font-family: "Alegreya", Georgia, "Times New Roman", serif;
+  font-size: clamp(0.85rem, 1.2vw, 0.98rem);
+  line-height: 1.35;
+  color: #555;
+  min-height: 0;
+  text-align: center;
+  overflow-wrap: break-word;
+}
+
+#image-modal-meta:empty {
+  display: none;
+}
+
 #image-modal-note {
-  margin: 0.9rem 0 0;
+  margin: 0.35rem 0 0;
   font-family: "Alegreya", Georgia, "Times New Roman", serif;
   font-size: clamp(0.95rem, 1.4vw, 1.1rem);
   line-height: 1.35;
   color: #111;
-  text-align: center;
   min-height: 1.2em;
+  text-align: center;
+  overflow-wrap: break-word;
+}
+
+#image-modal-note:empty {
+  display: none;
 }
 
 @media (max-width: 700px) {
@@ -339,6 +364,10 @@ body.modal-open {
     padding: 0.8rem 0.8rem 1rem;
     max-width: 95vw;
     max-height: 95vh;
+  }
+
+  #image-modal-inner {
+    max-width: 89vw;
   }
 
   #image-modal img {
