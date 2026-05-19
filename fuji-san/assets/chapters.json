@@ -6,15 +6,15 @@
   "chapters": [
     {
       "id": "overview",
-      "title": "Mt. Fuji",
-      "description": "An opening overview before the story begins.",
+      "title": "A homage to Hokusai",
+      "description": "If you’ve seen a popular artwork depicting Mt. Fuji, it is most likely by the Japanese ukiyo-e artist Hokusai. His series of landscape prints titled Thirty-six Views of Mount Fuji are one of the most recognizable work of Japanese art, and have influenced several art movements, including Impressionism.",
       "alignment": "centered",
       "hidden": false,
       "images": [],
       "location": {
-        "center": [138.7274, 35.3606],
-        "zoom": 8,
-        "pitch": 55,
+        "center": [138.47121, 35.19650],
+        "zoom": 3,
+        "pitch": 0,
         "bearing": 0
       },
       "mapAnimation": "flyTo",
@@ -22,46 +22,46 @@
     },
     {
       "id": "chapter-1",
-      "title": "Chapter 1 Title",
-      "description": "Write a chapter description here.",
+      "title": "Greetings before arrival!",
+      "description": "My favorite part of flying is looking out from the window. So after checking paths of recent HKG to NRT flights, I checked in to a seat on the left side, hoping to get a good view of Japan before I land. I did not expect to be blessed by a view of Mt. Fuji as we got closer to Tokyo!",
       "alignment": "left",
       "hidden": false,
       "images": ["IMG_0304.jpg", "IMG_0324.jpg", "IMG_0364.jpg"],
       "location": {
-        "center": [139.28, 33.96],
-        "zoom": 6,
-        "pitch": 45,
-        "bearing": 342
+        "center": [138.99777, 34.46157],
+        "zoom": 7,
+        "pitch": 0,
+        "bearing": -20
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
     },
     {
       "id": "chapter-2",
-      "title": "Chapter 2 Title",
-      "description": "Write a chapter description here.",
+      "title": "Bus ride to Fujikawaguchiko",
+      "description": "After struggling to spot Mt. Fuji from Tokyo for a few days, I took a bus nearly at noon to stay next to Lake Kawaguchi for one night. I was frantically checking our location & looking out of the window, hoping that it wouldn’t be too cloudy. I caught a few glimpses of Mt. Fuji from the bus as I arrived.",
       "alignment": "right",
       "hidden": false,
-      "images": ["IMG_E3407.jpg", "IMG_3460.jpg", "IMG_3472.jpg", "IMG_3483.jpg", "IMG_3550.jpg"],
+      "images": ["IMG_E3407.jpg", "IMG_3460.jpg"],
       "location": {
-        "center": [138.77, 35.50],
-        "zoom": 13,
+        "center": [138.81470, 35.56198],
+        "zoom": 11,
         "pitch": 50,
-        "bearing": 192
+        "bearing": -144
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
     },
     {
       "id": "chapter-3",
-      "title": "Chapter 3 Title",
+      "title": "Night",
       "description": "Write a chapter description here.",
       "alignment": "left",
       "hidden": false,
-      "images": ["IMG_E3582.jpg", "IMG_3585.jpg", "IMG_3623.jpg", "IMG_3632.jpg", "IMG_3655.jpg", "IMG_3660.jpg"],
+      "images": ["IMG_3472.jpg", "IMG_3483.jpg", "IMG_3550.jpg"],
       "location": {
         "center": [138.767, 35.512],
-        "zoom": 14,
+        "zoom": 9,
         "pitch": 55,
         "bearing": 192
       },
@@ -70,14 +70,14 @@
     },
     {
       "id": "chapter-4",
-      "title": "Chapter 4 Title",
+      "title": "Morning",
       "description": "Write a chapter description here.",
       "alignment": "right",
       "hidden": false,
-      "images": ["IMG_3803.jpg", "IMG_3815.jpg", "IMG_3870.jpg", "IMG_3976.jpg"],
+      "images": ["IMG_E3582.jpg", "IMG_3585.jpg"],
       "location": {
         "center": [138.754, 35.522],
-        "zoom": 14,
+        "zoom": 9,
         "pitch": 55,
         "bearing": 187
       },
@@ -86,14 +86,14 @@
     },
     {
       "id": "chapter-5",
-      "title": "Chapter 5 Title",
+      "title": "Walk & bus ride",
       "description": "Write a chapter description here.",
       "alignment": "left",
       "hidden": false,
-      "images": ["IMG_4160.jpg", "IMG_4229.jpg"],
+      "images": ["IMG_3623.jpg", "IMG_3632.jpg", "IMG_3655.jpg", "IMG_3660.jpg"],
       "location": {
         "center": [138.79, 35.48],
-        "zoom": 12,
+        "zoom": 9,
         "pitch": 50,
         "bearing": 205
       },
