@@ -39,6 +39,7 @@ function formatModalDate(dateStr) {
 }
 
 function createImageModal() {
+  var imageWidthCache = {};
   var modal = document.createElement("div");
   modal.id = "image-modal";
   modal.setAttribute("role", "dialog");
@@ -86,11 +87,18 @@ function createImageModal() {
     image.alt = alt || "Fullscreen image";
     note.textContent = imageNote || "";
     meta.innerHTML = "";
-    function clampToImageWidth() {
-      if (image.offsetWidth > 0) inner.style.maxWidth = image.offsetWidth + "px";
+    if (imageWidthCache[src]) {
+      inner.style.maxWidth = imageWidthCache[src] + "px";
+    } else {
+      function clampToImageWidth() {
+        if (image.offsetWidth > 0) {
+          imageWidthCache[src] = image.offsetWidth;
+          inner.style.maxWidth = image.offsetWidth + "px";
+        }
+      }
+      image.onload = clampToImageWidth;
+      requestAnimationFrame(clampToImageWidth);
     }
-    image.onload = clampToImageWidth;
-    requestAnimationFrame(clampToImageWidth);
     if (imageMeta && imageMeta.location) {
       var locEl = document.createElement("em");
       locEl.textContent = imageMeta.location;
