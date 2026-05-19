@@ -306,7 +306,7 @@ async function init() {
 
   mapboxgl.accessToken = config.accessToken;
 
-  var map = new mapboxgl.Map({
+  var map = window._map = new mapboxgl.Map({
     container: "map",
     style: config.style,
     center: config.chapters[0].location.center,
