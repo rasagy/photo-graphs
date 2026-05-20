@@ -205,6 +205,9 @@ h6 {
   min-height: 12vh;
   padding: 1.5rem 2rem 3rem;
   text-align: center;
+  color: #eee;
+  font-style: italic;
+  font-size: 0.75rem;
 }
 
 #features {

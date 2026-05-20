@@ -1,13 +1,13 @@
 {
-  "title": "Chasing Fuji",
-  "subtitle": "26 views of Mt. Fuji across 13 days in November 2023",
-  "byline": "By Rasagy Sharma",
-  "footer": "Built with Mapbox GL JS storytelling",
+  "title": "26 shots of Mt. Fuji",
+  "subtitle": "My favorite photos of Fuji-san, from my trip to Japan in Nov, 2023.",
+  "byline": "Photos shot by Rasagy Sharma, and gallery crafted with Claude Code using Mapbox & Python.",
+  "footer": "May you be blessed by Fuji-san’s view on your next trip to Japan!",
   "chapters": [
     {
       "id": "overview",
       "title": "A homage to Hokusai",
-      "description": "If you’ve seen a popular artwork depicting Mt. Fuji, it is most likely by the Japanese ukiyo-e artist Hokusai. His series of landscape prints titled Thirty-six Views of Mount Fuji are one of the most recognizable work of Japanese art, and have influenced several art movements, including Impressionism.",
+      "description": "The most popular artworks featuring Mt. Fuji are by the Japanese ukiyo-e artist Hokusai. His series of landscape prints titled “Thirty-six Views of Mount Fuji” are one of the most recognizable work of Japanese art. Inspired by him, I picked 26 shots that I loved, from the hundreds I captured during my trip.",
       "alignment": "centered",
       "hidden": false,
       "images": [],
@@ -15,14 +15,16 @@
         "center": [138.47121, 35.19650],
         "zoom": 3,
         "pitch": 0,
-        "bearing": 0
+        "bearing": 0,
+        "speed": 1.2,
+        "curve": 1.42
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
     },
     {
       "id": "chapter-1",
-      "title": "Greetings before arrival!",
+      "title": "Greeted on arrival by Fuji-san",
       "description": "My favorite part of flying is looking out from the window. So after checking paths of recent HKG to NRT flights, I checked in to a seat on the left side, hoping to get a good view of Japan before I land. I did not expect to be blessed by a view of Mt. Fuji as we got closer to Tokyo!",
       "alignment": "left",
       "hidden": false,
@@ -31,7 +33,9 @@
         "center": [138.99777, 34.46157],
         "zoom": 6.5,
         "pitch": 0,
-        "bearing": -20
+        "bearing": -20,
+        "speed": 0.6,
+        "curve": 1.42
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
@@ -47,31 +51,35 @@
         "center": [139.12833, 35.66994],
         "zoom": 9.15,
         "pitch": 55,
-        "bearing": -114
+        "bearing": -114,
+        "speed": 1,
+        "curve": 1.02
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
     },
     {
       "id": "chapter-3",
-      "title": "Night",
-      "description": "Write a chapter description here.",
+      "title": "Staring at the night sky with Fuji-san",
+      "description": "By 5PM, it was nearly sunset. The temperature fell drastically. The whole town was eerily silent as I strolled around the Lake Kawaguchi, and the night sky shimmered with stars all around Fuji-san.",
       "alignment": "centered",
       "hidden": false,
       "images": ["IMG_3472.jpg", "IMG_3483.jpg", "IMG_3550.jpg"],
       "location": {
         "center": [138.76483, 35.51819],
-        "zoom": 11.5,
+        "zoom": 11,
         "pitch": 60,
-        "bearing": -168
+        "bearing": -168,
+        "speed": 0.6,
+        "curve": 1.42
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
     },
     {
       "id": "chapter-4",
-      "title": "Morning",
-      "description": "Write a chapter description here.",
+      "title": "Dew at dawn",
+      "description": "The view from my Ryokan’s rooftop was splendid. By 7AM, Fuji-san was illuminated while the rest of the town didn’t receive direct sunlight yet.",
       "alignment": "left",
       "hidden": false,
       "images": ["IMG_E3582.jpg", "IMG_3585.jpg"],
@@ -79,15 +87,16 @@
         "center": [138.75627, 35.45212],
         "zoom": 12.5,
         "pitch": 75,
-        "bearing": -158
+        "bearing": -158,
+        "speed": 1
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
     },
     {
       "id": "chapter-5",
-      "title": "Walk & bus ride",
-      "description": "Write a chapter description here.",
+      "title": "Walk, take a bus, repeat.",
+      "description": "Do you know why the bus frequency is low around Lake Kawaguchi? So one can marvel at Fuji-san from different spots without a rush.",
       "alignment": "right",
       "hidden": false,
       "images": ["IMG_3623.jpg", "IMG_3632.jpg", "IMG_3655.jpg", "IMG_3660.jpg"],
@@ -95,15 +104,17 @@
         "center": [138.74961, 35.47640],
         "zoom": 12,
         "pitch": 74,
-        "bearing": 141
+        "bearing": 141,
+        "speed": 0.5,
+        "curve": 1
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
     },
     {
       "id": "chapter-6",
-      "title": "Around the Lake Kawaguchi",
-      "description": "Write a chapter description here.",
+      "title": "Roaming around Lake Kawaguchi",
+      "description": "Lake Kawaguchi is the second largest of the Fuji Five Lakes. Spent a few hours in the morning roaming through Momiji Maple Corridor, small shops, shrines & Oishi Park.",
       "alignment": "left",
       "hidden": false,
       "images": ["IMG_3803.jpg", "IMG_3815.jpg", "IMG_3870.jpg", "IMG_3976.jpg"],
@@ -111,15 +122,17 @@
         "center": [138.74755, 35.46856],
         "zoom": 12.2,
         "pitch": 69,
-        "bearing": -142
+        "bearing": -142,
+        "speed": 0.5,
+        "curve": 1.82
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
     },
     {
       "id": "chapter-7",
-      "title": "Clouds & snow",
-      "description": "Write a chapter description here.",
+      "title": "Cloudy, with a chance for snow!",
+      "description": "By afternoon, clouds gathered around Mt. Fuji. In a few hours, Fuji-san had disappeared in the veil of clouds. I didn’t spot it on my way to Osaka, but was elated to see it on the Shinkansen ride back to Tokyo!",
       "alignment": "center",
       "hidden": false,
       "images": ["IMG_4160.jpg", "IMG_4229.jpg", "IMG_6821.jpg", "IMG_6883.jpg"],
@@ -127,7 +140,9 @@
         "center": [138.81298, 35.08227],
         "zoom": 9.3,
         "pitch": 55,
-        "bearing": -16
+        "bearing": -16,
+        "speed": 1,
+        "curve": 1.42
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
@@ -135,7 +150,7 @@
     {
       "id": "chapter-8",
       "title": "A spectacular farewell",
-      "description": "Write a chapter description here.",
+      "description": "Mt. Fuji is only visible for a few months across the year. I ended the trip feeling blessed for witnessing many splendid views of Fuji-san, only for the flight to offer me one last, breath-taking view. What a memorable trip!",
       "alignment": "centered",
       "hidden": false,
       "images": ["IMG_7242.jpg", "IMG_7278.jpg", "IMG_7284.jpg", "IMG_E7286.jpg"],
@@ -143,7 +158,9 @@
         "center": [138.85462, 35.10969],
         "zoom": 8,
         "pitch": 78,
-        "bearing": 10
+        "bearing": 10,
+        "speed": 0.5,
+        "curve": 1.42
       },
       "mapAnimation": "flyTo",
       "rotateAnimation": false
