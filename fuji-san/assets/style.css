@@ -71,7 +71,7 @@ h6 {
   padding: 4rem 2rem;
   background-color: #c8dde8;
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.22'/%3E%3C/svg%3E"),
     linear-gradient(180deg, #b8d4e2 0%, #cce0ea 40%, #daedf5 75%, #c8dde8 100%);
   box-shadow: 0 8px 32px rgba(0, 0, 68, 0.18);
 }
@@ -95,6 +95,14 @@ h6 {
     0 12px 36px rgba(0, 0, 0, 0.30),
     0 4px 10px rgba(0, 0, 0, 0.18);
   transform-origin: center center;
+  transition: translate 0.35s ease, box-shadow 0.35s ease;
+}
+
+.hero-card:hover {
+  translate: 0 -6px;
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, 0.36),
+    0 8px 16px rgba(0, 0, 0, 0.20);
 }
 
 .hero-card img {
@@ -107,17 +115,23 @@ h6 {
 
 .hero-card--back {
   z-index: 1;
-  animation: hero-spread-back 1.2s ease-out .4s both;
+  animation:
+    hero-spread-back 1.2s ease-out .4s both,
+    hero-float-back 3.2s ease-in-out 1.6s infinite;
 }
 
 .hero-card--mid {
   z-index: 2;
-  animation: hero-spread-mid 1.2s ease-out .5s both;
+  animation:
+    hero-spread-mid 1.2s ease-out .5s both,
+    hero-float-mid 3.8s ease-in-out 1.7s infinite;
 }
 
 .hero-card--front {
   z-index: 3;
-  animation: hero-rise-front 1s ease-out .6s both;
+  animation:
+    hero-rise-front 1s ease-out .6s both,
+    hero-float-front 4.4s ease-in-out 1.6s infinite;
 }
 
 @keyframes hero-spread-back {
@@ -133,6 +147,21 @@ h6 {
 @keyframes hero-rise-front {
   from { transform: rotate(-1.5deg) translateY(10px); }
   to   { transform: rotate(-1.5deg) translateY(0px); }
+}
+
+@keyframes hero-float-back {
+  0%, 100% { transform: rotate(-11deg) translate(-75px, 5px); }
+  50%       { transform: rotate(-11deg) translate(-75px, 1px); }
+}
+
+@keyframes hero-float-mid {
+  0%, 100% { transform: rotate(8deg) translate(64px, 0px); }
+  50%       { transform: rotate(8deg) translate(64px, -5px); }
+}
+
+@keyframes hero-float-front {
+  0%, 100% { transform: rotate(-1.5deg) translateY(0px); }
+  50%       { transform: rotate(-1.5deg) translateY(-6px); }
 }
 
 #header h1 {
