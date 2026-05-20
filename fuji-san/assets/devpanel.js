@@ -49,12 +49,24 @@
     glass:  { label: 'Glass',  override: null, suppressInset: false },
   };
 
+  var FONT_HEADING = {
+    alegreya:       { label: 'Alegreya',       value: '"Alegreya", Georgia, serif' },
+    quintessential: { label: 'Quintessential', value: '"Quintessential", Georgia, serif' },
+  };
+
+  var FONT_BODY = {
+    alegreya: { label: 'Alegreya', value: '"Alegreya", Georgia, serif' },
+    spectral:  { label: 'Spectral',  value: '"Spectral", Georgia, serif' },
+  };
+
   // ── State ──────────────────────────────────────────────────────────────────
 
   var state = {
     mode: 'dark',
     shadow: 'soft',
     border: 'glass',
+    headingFont: 'alegreya',
+    bodyFont: 'alegreya',
   };
 
   // ── Apply state ────────────────────────────────────────────────────────────
@@ -79,6 +91,10 @@
     if (borderPreset.suppressInset) {
       root.style.setProperty('--card-inset', 'inset 0 0 0 0 transparent');
     }
+
+    // Fonts
+    root.style.setProperty('--font-heading', FONT_HEADING[state.headingFont].value);
+    root.style.setProperty('--font-body', FONT_BODY[state.bodyFont].value);
   }
 
   // ── Copy output ────────────────────────────────────────────────────────────
@@ -102,6 +118,10 @@
       '  Shadow:  ' + SHADOW[state.shadow].label,
       '  Border:  ' + BORDER[state.border].label,
       '',
+      'Typefaces',
+      '  Heading: ' + FONT_HEADING[state.headingFont].label,
+      '  Body:    ' + FONT_BODY[state.bodyFont].label,
+      '',
       '───────────────────────────────',
       'CSS :root variables',
       '───────────────────────────────',
@@ -112,6 +132,8 @@
       '  --card-border-color: ' + borderColor + ';',
       '  --card-shadow: ' + shadow + ';',
       '  --card-inset: ' + inset + ';',
+      '  --font-heading: ' + FONT_HEADING[state.headingFont].value + ';',
+      '  --font-body: ' + FONT_BODY[state.bodyFont].value + ';',
       '}',
     ];
 
@@ -266,6 +288,23 @@
       Object.keys(BORDER).map(function (k) { return { key: k, label: BORDER[k].label }; }),
       function () { return state.border; },
       function (k) { state.border = k; applyState(); }
+    ).el);
+
+    panel.appendChild(makeDivider());
+
+    // ── Typefaces section ──
+    panel.appendChild(makeSectionTitle('Typefaces'));
+
+    panel.appendChild(makeToggleGroup('Heading',
+      Object.keys(FONT_HEADING).map(function (k) { return { key: k, label: FONT_HEADING[k].label }; }),
+      function () { return state.headingFont; },
+      function (k) { state.headingFont = k; applyState(); }
+    ).el);
+
+    panel.appendChild(makeToggleGroup('Body',
+      Object.keys(FONT_BODY).map(function (k) { return { key: k, label: FONT_BODY[k].label }; }),
+      function () { return state.bodyFont; },
+      function (k) { state.bodyFont = k; applyState(); }
     ).el);
 
     panel.appendChild(makeDivider());
