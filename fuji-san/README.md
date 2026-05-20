@@ -8,9 +8,11 @@ Photos are pinned to where they were taken, grouped into chapters by location. S
 
 ## Visual design
 
-- **Hero section** — warm cream background at 50vh, with three thumbnail photos stacked as animated polaroid cards that fan out on load. The satellite map is already visible below it before scrolling begins.
-- **Chapter cards** — dark glassmorphism panels: semi-transparent black background, heavy backdrop blur, and a subtle top-edge shine on the border.
-- **Lightbox** — full-size image in a polaroid-style card with a random tilt, caption below.
+- **Hero section** — blue-grey gradient at 50vh with three thumbnail photos stacked as animated polaroid cards that fan out on load. The satellite map is already visible below before scrolling begins.
+- **Chapter cards** — dark glassmorphism panels: `rgba(0,0,0,0.22)` tint, `blur(20px)` backdrop filter, soft drop shadow, and a subtle glass-shine border.
+- **Typefaces** — Quintessential for chapter titles (h1, h3); Alegreya for subtitles, body text, and captions.
+- **Gallery thumbnails** — each photo has a white border frame and a slight random tilt (±3°); hovering lifts the card with a shadow.
+- **Lightbox** — full-size image in a polaroid-style card with a random tilt, caption and location/date/time metadata below.
 
 ## Stack
 

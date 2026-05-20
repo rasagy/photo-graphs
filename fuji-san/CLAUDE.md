@@ -12,17 +12,32 @@ A Mapbox GL JS scrollytelling page for 26 iPhone 15 photos of Mt. Fuji, each pin
 ## Visual Design (current)
 
 ### Hero section (`#header`)
-- Sits above `#map` in the DOM; `min-height: 50vh`, warm cream background (`#f5f0eb`), bottom shadow
+- Sits above `#map` in the DOM; `min-height: 50vh`, blue-grey gradient background, bottom shadow
 - The fixed map is already visible in the lower half of the viewport on load
 - Contains a `#hero-stack`: 3 static thumbnail photos as stacked polaroid-style cards
-  - Cards start flat/stacked on load, then animate: back two spread left/right (2.2s ease-out), front card rises slightly (2s ease-out)
-  - Current photos: `IMG_0364.jpg` (back-left), `IMG_7242.jpg` (mid-right), `IMG_3623.jpg` (front)
+  - Cards start flat/stacked on load, then animate: back two spread left/right (1.2s ease-out), front card rises slightly (1s ease-out)
+  - Current photos: `IMG_3472.jpg` (back-left), `IMG_3660.jpg` (mid-right), `IMG_7278.jpg` (front)
   - To change photos: edit the `<figure>` elements in `index.html` `#header`
 
 ### Chapter step cards (`.step`)
 - Dark glassmorphism: `rgba(0,0,0,0.22)` background, `blur(20px) saturate(160%)` backdrop filter
-- Border: `1px solid rgba(100,100,100,0.45)` + inset top highlight for glass shine effect
+- Border: `1px solid rgba(100,100,100,0.45)` + `inset 0 1px 0 rgba(100,100,100,0.80)` top highlight for glass shine
+- Box shadow: `0 8px 28px rgba(0,0,0,0.22)` (soft)
 - White text (`color: #f8f8f8`), `border-radius: 14px`
+- Active card adds a blue focus ring: `0 0 0 2px rgba(0,68,158,0.22)`
+- All card properties driven by CSS custom properties in `:root` (`--card-bg`, `--card-backdrop`, `--card-border-color`, `--card-text`, `--card-shadow`, `--card-inset`) for easy future tweaking
+
+### Typefaces
+- **h1, h3** — Quintessential (Google Fonts, display weight)
+- **h2, h4–h6, body, captions** — Alegreya (Google Fonts, serif)
+- Spectral is loaded but not currently applied (kept for future reference)
+
+### Gallery thumbnails (`.chapter-gallery`)
+- Horizontal drag-to-scroll strip, 200px fixed height, snap-to-item
+- Each thumbnail has a `4px solid rgba(255,255,255,0.90)` white border frame
+- On hover: lifts `translateY(-7px)` with `box-shadow: 0 12px 28px rgba(0,0,0,0.40)`
+- Each `.chapter-gallery-item` gets a random `--thumb-tilt` of ±3° applied in `story.js` at render time
+- Gallery has `padding: 30px 20px; margin: -30px -20px` so tilted/hovered thumbnails have breathing room before the overflow clip boundary
 
 ## File Structure
 ```
@@ -97,6 +112,6 @@ python extract_photo_metadata.py ./assets/selected/
 `map-markers.html` — Mapbox GL JS (`light-v11`), one arrow marker per photo rotated by `bearing_to_fuji_deg`, lightbox on click. All data embedded inline. Fuji summit marked with an inlined SVG mountain icon (36×36px, `#00449E`, CSS drop-shadow). Kept as a backup; not connected to `chapters.json`.
 
 ## Multi-Image Gallery + Lightbox (adapted from kochi-highlight-map-2026)
-- Gallery: horizontal drag-to-scroll, snap-to-item, 200px fixed height
-- Lightbox: click any image → full-size modal with random polaroid tilt (±5°), caption below, click-anywhere or Escape to close
+- Gallery: horizontal drag-to-scroll, snap-to-item, 200px fixed height, white border frame, ±3° random tilt per photo, lift-on-hover
+- Lightbox: click any image → full-size modal with random polaroid tilt (±5°), caption + location/date/time metadata below, click-anywhere or Escape to close
 - Reference implementation: `/Users/rasagy/Documents/GitHub/kochi-highlight-map-2026`
