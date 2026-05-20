@@ -454,7 +454,8 @@ body.modal-open {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.chapter-gallery-item img:hover {
+.chapter-gallery-item img:hover,
+.chapter-gallery-item.thumb-active img {
   transform: translateY(-7px);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.40);
 }

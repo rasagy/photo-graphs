@@ -320,6 +320,7 @@ async function init() {
 
         var figure = document.createElement("figure");
         figure.className = "chapter-gallery-item";
+        figure.dataset.filename = filename;
         var tiltDeg = (Math.random() * 6 - 3).toFixed(1);
         figure.style.setProperty("--thumb-tilt", tiltDeg + "deg");
 
@@ -457,6 +458,14 @@ async function init() {
         var bearing = isNaN(meta.bearingToFuji) ? 0 : meta.bearingToFuji;
         var el = makeArrowEl();
         el.style.display = "none";
+        el.addEventListener("mouseenter", function () {
+          document.querySelectorAll('.chapter-gallery-item[data-filename="' + filename + '"]')
+            .forEach(function (fig) { fig.classList.add("thumb-active"); });
+        });
+        el.addEventListener("mouseleave", function () {
+          document.querySelectorAll('.chapter-gallery-item[data-filename="' + filename + '"]')
+            .forEach(function (fig) { fig.classList.remove("thumb-active"); });
+        });
         photoMarkers[filename] = new mapboxgl.Marker({
           element: el,
           anchor: "center",
