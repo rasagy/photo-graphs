@@ -320,6 +320,8 @@ async function init() {
 
         var figure = document.createElement("figure");
         figure.className = "chapter-gallery-item";
+        var tiltDeg = (Math.random() * 6 - 3).toFixed(1);
+        figure.style.setProperty("--thumb-tilt", tiltDeg + "deg");
 
         var galleryImage = document.createElement("img");
         galleryImage.src = src;

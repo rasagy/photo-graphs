@@ -46,26 +46,7 @@
   var BORDER = {
     none:   { label: 'None',   override: 'transparent', suppressInset: true },
     subtle: { label: 'Subtle', override: 'rgba(150, 150, 150, 0.25)', suppressInset: false },
-    glass:  { label: 'Glass',  override: null, suppressInset: false }, // uses mode default
-  };
-
-  var THUMB_FRAME = {
-    none:     { label: 'None',         cls: '' },
-    border:   { label: 'White border', cls: 'thumb-frame-border' },
-    polaroid: { label: 'Polaroid',     cls: 'thumb-frame-polaroid' },
-  };
-
-  var THUMB_HOVER = {
-    none:  { label: 'None',  cls: '' },
-    scale: { label: 'Scale', cls: 'thumb-hover-scale' },
-    lift:  { label: 'Lift',  cls: 'thumb-hover-lift' },
-    glow:  { label: 'Glow',  cls: 'thumb-hover-glow' },
-  };
-
-  var THUMB_TILT = {
-    off:    { label: 'Off',  range: 0 },
-    subtle: { label: '±2°', range: 2 },
-    bold:   { label: '±5°', range: 5 },
+    glass:  { label: 'Glass',  override: null, suppressInset: false },
   };
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -74,14 +55,9 @@
     mode: 'dark',
     shadow: 'soft',
     border: 'glass',
-    thumbFrame: 'none',
-    thumbHover: 'none',
-    thumbTilt: 'off',
   };
 
   // ── Apply state ────────────────────────────────────────────────────────────
-
-  var tiltSeeds = {};
 
   function applyState() {
     var root = document.documentElement;
@@ -103,55 +79,11 @@
     if (borderPreset.suppressInset) {
       root.style.setProperty('--card-inset', 'inset 0 0 0 0 transparent');
     }
-
-    // Thumbnail frame classes
-    Object.keys(THUMB_FRAME).forEach(function (k) {
-      if (THUMB_FRAME[k].cls) document.body.classList.remove(THUMB_FRAME[k].cls);
-    });
-    if (THUMB_FRAME[state.thumbFrame].cls) {
-      document.body.classList.add(THUMB_FRAME[state.thumbFrame].cls);
-    }
-
-    // Thumbnail hover classes
-    Object.keys(THUMB_HOVER).forEach(function (k) {
-      if (THUMB_HOVER[k].cls) document.body.classList.remove(THUMB_HOVER[k].cls);
-    });
-    if (THUMB_HOVER[state.thumbHover].cls) {
-      document.body.classList.add(THUMB_HOVER[state.thumbHover].cls);
-    }
-
-    // Tilt
-    applyTilt();
   }
-
-  function applyTilt() {
-    var range = THUMB_TILT[state.thumbTilt].range;
-    document.querySelectorAll('.chapter-gallery-item').forEach(function (item, i) {
-      if (range === 0) {
-        item.style.removeProperty('--thumb-tilt');
-      } else {
-        if (tiltSeeds[i] === undefined) {
-          tiltSeeds[i] = Math.random() * 2 - 1; // −1 to +1
-        }
-        item.style.setProperty('--thumb-tilt', (tiltSeeds[i] * range).toFixed(1) + 'deg');
-      }
-    });
-  }
-
-  function reshuffleTilt() {
-    tiltSeeds = {};
-    applyTilt();
-  }
-
-  // Re-apply tilt when the story renders gallery items
-  var observer = new MutationObserver(function () {
-    if (state.thumbTilt !== 'off') applyTilt();
-  });
 
   // ── Copy output ────────────────────────────────────────────────────────────
 
   function buildCopyText() {
-    var root = document.documentElement;
     var modeVars = MODE[state.mode].vars;
     var shadow = SHADOW[state.shadow].value;
     var borderColor = BORDER[state.border].override !== null
@@ -161,10 +93,6 @@
       ? 'inset 0 0 0 0 transparent'
       : modeVars['--card-inset'];
 
-    var classes = [];
-    if (THUMB_FRAME[state.thumbFrame].cls) classes.push(THUMB_FRAME[state.thumbFrame].cls);
-    if (THUMB_HOVER[state.thumbHover].cls) classes.push(THUMB_HOVER[state.thumbHover].cls);
-
     var lines = [
       'Fuji-san Design Choices',
       '═══════════════════════════════',
@@ -173,11 +101,6 @@
       '  Mode:    ' + MODE[state.mode].label,
       '  Shadow:  ' + SHADOW[state.shadow].label,
       '  Border:  ' + BORDER[state.border].label,
-      '',
-      'Gallery Thumbnails',
-      '  Frame:   ' + THUMB_FRAME[state.thumbFrame].label,
-      '  Hover:   ' + THUMB_HOVER[state.thumbHover].label,
-      '  Tilt:    ' + THUMB_TILT[state.thumbTilt].label,
       '',
       '───────────────────────────────',
       'CSS :root variables',
@@ -191,24 +114,6 @@
       '  --card-inset: ' + inset + ';',
       '}',
     ];
-
-    if (classes.length) {
-      lines.push('');
-      lines.push('───────────────────────────────');
-      lines.push('Add to <body> element');
-      lines.push('───────────────────────────────');
-      lines.push('class="' + classes.join(' ') + '"');
-    }
-
-    if (state.thumbTilt !== 'off') {
-      lines.push('');
-      lines.push('───────────────────────────────');
-      lines.push('Thumbnail tilt');
-      lines.push('───────────────────────────────');
-      lines.push('Range: ±' + THUMB_TILT[state.thumbTilt].range + '°');
-      lines.push('Apply random --thumb-tilt on each .chapter-gallery-item');
-      lines.push('(see devpanel.js applyTilt() for the JS logic)');
-    }
 
     return lines.join('\n');
   }
@@ -269,7 +174,7 @@
 
     refreshButtons();
     wrap.appendChild(row);
-    return { el: wrap, refresh: refreshButtons };
+    return { el: wrap };
   }
 
   function makeSectionTitle(text) {
@@ -319,7 +224,7 @@
       'top:56px',
       'right:14px',
       'z-index:2000',
-      'width:252px',
+      'width:232px',
       'background:rgba(14,11,9,0.90)',
       'backdrop-filter:blur(24px) saturate(180%)',
       '-webkit-backdrop-filter:blur(24px) saturate(180%)',
@@ -335,7 +240,7 @@
 
     // Panel header
     var header = document.createElement('div');
-    header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;';
+    header.style.cssText = 'margin-bottom:12px;';
     var title = document.createElement('span');
     title.textContent = 'Design Panel';
     title.style.cssText = 'font-weight:700;letter-spacing:0.04em;font-size:12px;';
@@ -345,94 +250,23 @@
     // ── Step Cards section ──
     panel.appendChild(makeSectionTitle('Step Cards'));
 
-    var modeGroup = makeToggleGroup('Mode',
+    panel.appendChild(makeToggleGroup('Mode',
       Object.keys(MODE).map(function (k) { return { key: k, label: MODE[k].label }; }),
       function () { return state.mode; },
       function (k) { state.mode = k; applyState(); }
-    );
-    panel.appendChild(modeGroup.el);
+    ).el);
 
-    var shadowGroup = makeToggleGroup('Shadow',
+    panel.appendChild(makeToggleGroup('Shadow',
       Object.keys(SHADOW).map(function (k) { return { key: k, label: SHADOW[k].label }; }),
       function () { return state.shadow; },
       function (k) { state.shadow = k; applyState(); }
-    );
-    panel.appendChild(shadowGroup.el);
+    ).el);
 
-    var borderGroup = makeToggleGroup('Border',
+    panel.appendChild(makeToggleGroup('Border',
       Object.keys(BORDER).map(function (k) { return { key: k, label: BORDER[k].label }; }),
       function () { return state.border; },
       function (k) { state.border = k; applyState(); }
-    );
-    panel.appendChild(borderGroup.el);
-
-    panel.appendChild(makeDivider());
-
-    // ── Gallery Thumbnails section ──
-    panel.appendChild(makeSectionTitle('Gallery Thumbnails'));
-
-    var frameGroup = makeToggleGroup('Frame',
-      Object.keys(THUMB_FRAME).map(function (k) { return { key: k, label: THUMB_FRAME[k].label }; }),
-      function () { return state.thumbFrame; },
-      function (k) { state.thumbFrame = k; applyState(); }
-    );
-    panel.appendChild(frameGroup.el);
-
-    var hoverGroup = makeToggleGroup('On hover',
-      Object.keys(THUMB_HOVER).map(function (k) { return { key: k, label: THUMB_HOVER[k].label }; }),
-      function () { return state.thumbHover; },
-      function (k) { state.thumbHover = k; applyState(); }
-    );
-    panel.appendChild(hoverGroup.el);
-
-    // Tilt row + Re-tilt button
-    var tiltWrap = document.createElement('div');
-    tiltWrap.style.cssText = 'margin-bottom:9px;';
-    var tiltLbl = document.createElement('div');
-    tiltLbl.textContent = 'Tilt';
-    tiltLbl.style.cssText = 'font-size:10px;text-transform:uppercase;letter-spacing:0.08em;opacity:0.55;margin-bottom:4px;';
-    tiltWrap.appendChild(tiltLbl);
-
-    var tiltRow = document.createElement('div');
-    tiltRow.style.cssText = 'display:flex;gap:4px;align-items:center;flex-wrap:wrap;';
-
-    var tiltBtns = [];
-
-    function refreshTiltBtns() {
-      tiltBtns.forEach(function (b) {
-        var on = b.dataset.pkey === state.thumbTilt;
-        b.style.background = on ? BTN_ACTIVE_BG : 'rgba(255,255,255,0.06)';
-        b.style.borderColor = on ? BTN_ACTIVE_BORDER : 'rgba(255,255,255,0.16)';
-        b.style.fontWeight = on ? '700' : '400';
-        b.style.color = on ? '#fff' : '#e8e8e8';
-      });
-      reshuffleBtn.style.display = state.thumbTilt === 'off' ? 'none' : 'inline-block';
-    }
-
-    Object.keys(THUMB_TILT).forEach(function (k) {
-      var btn = document.createElement('button');
-      btn.dataset.pkey = k;
-      btn.textContent = THUMB_TILT[k].label;
-      btn.style.cssText = BTN_BASE;
-      btn.addEventListener('click', function () {
-        state.thumbTilt = k;
-        applyState();
-        refreshTiltBtns();
-      });
-      tiltRow.appendChild(btn);
-      tiltBtns.push(btn);
-    });
-
-    var reshuffleBtn = document.createElement('button');
-    reshuffleBtn.textContent = '↺';
-    reshuffleBtn.title = 'Re-randomise tilt';
-    reshuffleBtn.style.cssText = BTN_BASE + ';display:none;padding:3px 7px;opacity:0.7;';
-    reshuffleBtn.addEventListener('click', reshuffleTilt);
-    tiltRow.appendChild(reshuffleBtn);
-
-    refreshTiltBtns();
-    tiltWrap.appendChild(tiltRow);
-    panel.appendChild(tiltWrap);
+    ).el);
 
     panel.appendChild(makeDivider());
 
@@ -506,7 +340,6 @@
   // ── Init ───────────────────────────────────────────────────────────────────
 
   function init() {
-    observer.observe(document.body, { childList: true, subtree: true });
     buildPanel();
     applyState();
   }
