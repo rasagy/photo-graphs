@@ -38,6 +38,12 @@ A Mapbox GL JS scrollytelling page for 26 iPhone 15 photos of Mt. Fuji, each pin
 - On hover: lifts `translateY(-7px)` with `box-shadow: 0 12px 28px rgba(0,0,0,0.40)`
 - Each `.chapter-gallery-item` gets a random `--thumb-tilt` of ±3° applied in `story.js` at render time
 - Gallery has `padding: 30px 20px; margin: -30px -20px` so tilted/hovered thumbnails have breathing room before the overflow clip boundary
+- Each `<figure>` carries `data-filename` matching the photo filename — used by marker hover to target the right thumbnail
+
+### Marker ↔ thumbnail interaction
+- Hovering a map marker adds `.thumb-active` to the matching `[data-filename]` figure, lifting it (same as the CSS `:hover` lift)
+- `.thumb-active` is defined in `style.css` alongside the `:hover` rule
+- The reverse (thumbnail → marker scale) was not implemented: Mapbox's marker wrapper intercepts transforms in a way that makes cross-scope wiring unreliable
 
 ## File Structure
 ```
