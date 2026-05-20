@@ -1,4 +1,4 @@
-# Chasing Fuji
+# 26 shots of Mt. Fuji
 
 A scrollytelling map of 26 iPhone 15 photos of Mt. Fuji taken across 13 days in November 2023 — from the airplane window, Hakone ridgelines, lakeside towns, and the Shinkansen.
 

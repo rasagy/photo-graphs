@@ -1,4 +1,4 @@
-# Fuji-san Scrollytelling Map
+# 26 shots of Mt. Fuji — Scrollytelling Map
 
 ## Project Goal
 A Mapbox GL JS scrollytelling page for 26 iPhone 15 photos of Mt. Fuji, each pinned to its GPS location. Photos are grouped into chapters by location/time; each chapter flies the map to that spot with satellite + 3D terrain.
