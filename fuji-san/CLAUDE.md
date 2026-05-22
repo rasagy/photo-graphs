@@ -12,8 +12,9 @@ A Mapbox GL JS scrollytelling page for 26 iPhone 15 photos of Mt. Fuji, each pin
 ## Visual Design (current)
 
 ### Hero section (`#header`)
-- Sits above `#map` in the DOM; `min-height: 50vh`, blue-grey gradient background, bottom shadow
-- The fixed map is already visible in the lower half of the viewport on load
+- Sits above `#map` in the DOM; `min-height: 50vh`, glassmorphism background (matches step cards: `var(--card-bg)` + `var(--card-backdrop)`), bottom glass border + shadow
+- The fixed map shows through the transparent header via backdrop-filter blur
+- Text colors: h1 full white (`var(--card-text)`), h2 subtitle at 75% opacity, no byline (moved to footer)
 - Contains a `#hero-stack`: 3 static thumbnail photos as stacked polaroid-style cards
   - Cards start flat/stacked on load, then animate: back two spread left/right (1.2s ease-out), front card rises slightly (1s ease-out)
   - Current photos: `IMG_3472.jpg` (back-left), `IMG_3660.jpg` (mid-right), `IMG_7278.jpg` (front)
@@ -37,7 +38,7 @@ A Mapbox GL JS scrollytelling page for 26 iPhone 15 photos of Mt. Fuji, each pin
 - Each thumbnail has a `4px solid rgba(255,255,255,0.90)` white border frame
 - On hover: lifts `translateY(-7px)` with `box-shadow: 0 12px 28px rgba(0,0,0,0.40)`
 - Each `.chapter-gallery-item` gets a random `--thumb-tilt` of ±3° applied in `story.js` at render time
-- Gallery has `padding: 30px 20px; margin: -30px -20px` so tilted/hovered thumbnails have breathing room before the overflow clip boundary
+- Gallery has `padding: 20px; margin: -10px -10px` so tilted/hovered thumbnails have breathing room before the overflow clip boundary
 - Each `<figure>` carries `data-filename` matching the photo filename — used by marker hover to target the right thumbnail
 
 ### Marker ↔ thumbnail interaction
@@ -57,13 +58,14 @@ A Mapbox GL JS scrollytelling page for 26 iPhone 15 photos of Mt. Fuji, each pin
     ├── metadata.csv        # EXIF data + description column for per-photo captions
     ├── story.js            # scrollytelling engine (async, fetches chapters.json + metadata.csv)
     ├── style.css           # layout, gallery, modal styles
+    ├── favicon.svg         # Fuji mountain SVG icon (same as map marker)
     └── jpg/                # 26 compressed JPGs used by the web page
 ```
 
 ## Architecture
 
 `index.html` loads `config.js` (globals) then `assets/story.js`. On init, `story.js` fetches `chapters.json` and `metadata.csv` in parallel:
-- `chapters.json` → title, subtitle, byline, chapters array
+- `chapters.json` → title, subtitle, byline (shown in footer), chapters array
 - `metadata.csv` → filename → description lookup (used as lightbox caption)
 
 Images in `chapters.json` are bare filenames (e.g. `"IMG_3460.jpg"`). `story.js` prepends `assets/jpg/` for the `src` and pulls the `description` field from `metadata.csv` as the lightbox note.

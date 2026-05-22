@@ -8,11 +8,12 @@ Photos are pinned to where they were taken, grouped into chapters by location. S
 
 ## Visual design
 
-- **Hero section** — blue-grey gradient at 50vh with three thumbnail photos stacked as animated polaroid cards that fan out on load. The satellite map is already visible below before scrolling begins.
-- **Chapter cards** — dark glassmorphism panels: `rgba(0,0,0,0.22)` tint, `blur(20px)` backdrop filter, soft drop shadow, and a subtle glass-shine border.
+- **Hero section** — dark glassmorphism at 50vh (same aesthetic as chapter cards): transparent dark tint with `blur(20px)` backdrop filter, so the satellite map shows through. Three thumbnail photos stacked as animated polaroid cards fan out on load.
+- **Chapter cards** — dark glassmorphism panels: `rgba(0,0,0,0.22)` tint, `blur(20px)` backdrop filter, soft drop shadow, and a subtle glass-shine border. All properties driven by CSS custom properties (`--card-bg`, `--card-backdrop`, etc.).
 - **Typefaces** — Quintessential for chapter titles (h1, h3); Alegreya for subtitles, body text, and captions.
 - **Gallery thumbnails** — each photo has a white border frame and a slight random tilt (±3°); hovering lifts the card with a shadow. Hovering a map marker also lifts the corresponding thumbnail.
-- **Lightbox** — full-size image in a polaroid-style card with a random tilt, caption and location/date/time metadata below.
+- **Lightbox** — full-size image in a polaroid-style card with a random tilt, caption and location/date/time metadata below. Overlay is near-black (`rgba(10,10,12,0.86)`).
+- **Favicon** — the Fuji mountain SVG icon (`assets/favicon.svg`), matching the summit marker on the map.
 
 ## Stack
 
@@ -44,5 +45,6 @@ Cannot open `index.html` directly via `file://` — the `fetch()` calls require 
 | `assets/metadata.csv` | EXIF metadata + per-photo captions |
 | `assets/story.js` | Scrollytelling engine |
 | `assets/style.css` | Layout, hero, glass cards, gallery, modal |
+| `assets/favicon.svg` | Fuji mountain icon (used as browser favicon) |
 | `config.js` | Mapbox token and style settings |
 | `map-markers.html` | Earlier prototype — all photos as arrows on a simple map |
