@@ -285,11 +285,6 @@ async function init() {
     subtitleEl.textContent = config.subtitle;
     header.appendChild(subtitleEl);
   }
-  if (config.byline) {
-    var bylineEl = document.createElement("p");
-    bylineEl.textContent = config.byline;
-    header.appendChild(bylineEl);
-  }
   if (!header.textContent.trim()) {
     header.style.display = "none";
   }
@@ -373,6 +368,11 @@ async function init() {
     });
   });
 
+  if (config.byline) {
+    var bylineEl = document.createElement("p");
+    bylineEl.textContent = config.byline;
+    footer.appendChild(bylineEl);
+  }
   if (config.footer) {
     var footerText = document.createElement("p");
     footerText.innerHTML = config.footer;
