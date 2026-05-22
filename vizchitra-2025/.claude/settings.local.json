@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls /Users/rasagy/Documents/GitHub/photo-graphics-local/vizchitra-2025/v3/assets/*.mp4 2>/dev/null | head -5)",
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/rasagy/Documents/GitHub/photo-graphics-local/vizchitra-2025/v3/assets/IMG_3169_thumb.JPG 2>/dev/null && ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 /Users/rasagy/Documents/GitHub/photo-graphics-local/vizchitra-2025/v3/assets/IMG_0086.mp4 2>/dev/null)"
+    ]
+  }
+}
