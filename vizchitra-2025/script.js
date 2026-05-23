@@ -54,6 +54,64 @@ async function createVisualization() {
 
     document.body.appendChild(svg.node());  // Append SVG to the body
 
+    // --- MODAL LIGHTBOX ---
+    function createModal() {
+      const overlay = document.createElement("div");
+      overlay.id = "photo-modal";
+      const card = document.createElement("div"); card.id = "photo-modal-card";
+      const inner = document.createElement("div"); inner.id = "photo-modal-inner";
+      const caption = document.createElement("div"); caption.id = "photo-modal-caption";
+      card.appendChild(inner); card.appendChild(caption);
+      overlay.appendChild(card);
+      document.body.appendChild(overlay);
+
+      function close() {
+        overlay.classList.remove("is-open");
+        document.body.classList.remove("modal-open");
+        inner.innerHTML = "";
+        caption.textContent = "";
+      }
+      overlay.addEventListener("click", close);
+      card.addEventListener("click", e => e.stopPropagation());
+      document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+
+      function open(d) {
+        const tilt = (Math.random() * 6 - 3).toFixed(2) + "deg";
+        card.style.setProperty("--modal-tilt", tilt);
+        inner.innerHTML = "";
+        const isVideo = d.extension === "MOV";
+        if (isVideo) {
+          const vid = document.createElement("video");
+          vid.src = `assets_hires/${d.name}.mp4`;
+          vid.controls = true; vid.autoplay = true;
+          vid.addEventListener("loadedmetadata", () => {
+            const maxW = Math.min(window.innerWidth * 0.84, 1000);
+            const maxH = window.innerHeight * 0.72;
+            const ratio = vid.videoWidth / vid.videoHeight;
+            let w = vid.videoWidth, h = vid.videoHeight;
+            if (w > maxW) { w = maxW; h = w / ratio; }
+            if (h > maxH) { h = maxH; w = h * ratio; }
+            vid.style.width = Math.round(w) + "px";
+            vid.style.height = Math.round(h) + "px";
+          });
+          inner.appendChild(vid);
+        } else {
+          const img = document.createElement("img");
+          img.src = `assets_hires/${d.name}.jpg`;
+          img.alt = "";
+          inner.appendChild(img);
+        }
+        const type = isVideo ? "Video" : "Photo";
+        const time = formatTime(d.time_created);
+        const dur = isVideo && d.duration ? ` · ${Math.round(+d.duration)}s` : "";
+        caption.textContent = `${type} · ${time}${dur}`;
+        overlay.classList.add("is-open");
+        document.body.classList.add("modal-open");
+      }
+      return { open, close };
+    }
+    const modal = createModal();
+
     const plotGroup = svg.append("g");
 
     // 4. --- ADD RADIAL GRIDLINES FOR HOURS ---
@@ -212,73 +270,37 @@ async function createVisualization() {
         g.select(".info-label").style("display", "none");
       });
 
-    // Video hover: enlarge thumbnail; click: toggle inline video playback
+    // Video hover: enlarge thumbnail
     shapes.filter((d) => !["JPG", "HEIC"].includes(d.extension))
       .on("mouseover", function(event, d) {
         const g = d3.select(this);
         g.raise();
         g.attr("opacity", 1);
-        if (g.select("foreignObject").empty()) {
-          const w = thumbW(d) * HOVER_SCALE;
-          const h = w * getAspectRatio(d);
-          g.select("image")
-            .transition().duration(150)
-            .attr("width", w).attr("height", h)
-            .attr("x", -w / 2).attr("y", -h / 2);
-        }
+        const w = thumbW(d) * HOVER_SCALE;
+        const h = w * getAspectRatio(d);
+        g.select("image")
+          .transition().duration(150)
+          .attr("width", w).attr("height", h)
+          .attr("x", -w / 2).attr("y", -h / 2);
         g.select(".info-label").style("display", null);
       })
       .on("mouseleave", function(event, d) {
         const g = d3.select(this);
         g.attr("opacity", targetOpacity(d));
-        if (g.select("foreignObject").empty()) {
-          const w = thumbW(d);
-          const h = w * getAspectRatio(d);
-          g.select("image")
-            .transition().duration(150)
-            .attr("width", w).attr("height", h)
-            .attr("x", -w / 2).attr("y", -h / 2);
-        }
-        g.select(".info-label").style("display", "none");
-      })
-      .on("click", function(event, d) {
-        const g = d3.select(this);
-        const w = thumbW(d) * HOVER_SCALE;
+        const w = thumbW(d);
         const h = w * getAspectRatio(d);
-        const fo = g.select("foreignObject");
-        if (fo.empty()) {
-          // Hide thumbnail, show inline video
-          g.select("image").style("display", "none");
-          const foEl = g.append("foreignObject")
-            .attr("width", w).attr("height", h)
-            .attr("x", -w / 2).attr("y", -h / 2);
-          const video = foEl.append("xhtml:video")
-            .attr("src", `assets/${d.name}.mp4`)
-            .attr("autoplay", "")
-            .attr("width", w)
-            .attr("height", h)
-            .style("object-fit", "contain");
-          // Restore thumbnail when video ends
-          video.on("ended", function() {
-            fo.remove();
-            const imgW = thumbW(d);
-            const imgH = imgW * getAspectRatio(d);
-            g.select("image")
-              .style("display", null)
-              .attr("width", imgW).attr("height", imgH)
-              .attr("x", -imgW / 2).attr("y", -imgH / 2);
-          });
-        } else {
-          // Second click: remove video, restore thumbnail
-          fo.remove();
-          const imgW = thumbW(d);
-          const imgH = imgW * getAspectRatio(d);
-          g.select("image")
-            .style("display", null)
-            .attr("width", imgW).attr("height", imgH)
-            .attr("x", -imgW / 2).attr("y", -imgH / 2);
-        }
+        g.select("image")
+          .transition().duration(150)
+          .attr("width", w).attr("height", h)
+          .attr("x", -w / 2).attr("y", -h / 2);
+        g.select(".info-label").style("display", "none");
       });
+
+    // Click any thumbnail to open modal lightbox
+    shapes.on("click", function(event, d) {
+      event.stopPropagation();
+      modal.open(d);
+    });
 
     // 8. --- FILTERS ---
     function makeButton(parent, x, y, w, label, getActive, onToggle) {

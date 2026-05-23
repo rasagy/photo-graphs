@@ -13,6 +13,37 @@
       display: block;
       margin: 20px auto;
     }
+
+    #photo-modal {
+      position: fixed; inset: 0; z-index: 1000;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(10, 10, 12, 0.88);
+      backdrop-filter: blur(4px);
+      padding: 1rem; box-sizing: border-box; cursor: zoom-out;
+    }
+    #photo-modal.is-open { display: flex; }
+    body.modal-open { overflow: hidden; }
+    #photo-modal-card {
+      background: #fff; border-radius: 3px;
+      padding: 1.25rem 1.25rem 1.6rem;
+      max-width: min(92vw, 1100px); max-height: 92vh;
+      box-sizing: border-box;
+      transform: rotate(var(--modal-tilt, -1deg));
+      box-shadow: 0 26px 45px rgba(35,25,18,.28), 0 10px 14px rgba(35,25,18,.2);
+      cursor: default;
+    }
+    #photo-modal-inner { width: fit-content; max-width: min(84vw, 1000px); }
+    #photo-modal img {
+      max-width: min(84vw, 1000px); max-height: 72vh;
+      width: auto; height: auto; display: block; border-radius: 2px;
+    }
+    #photo-modal video {
+      display: block; border-radius: 2px; object-fit: contain;
+    }
+    #photo-modal-caption {
+      margin: 0.7rem 0 0; text-align: center;
+      font-family: sans-serif; font-size: 0.85rem; color: #555;
+    }
   </style>
 </head>
 <body>
