@@ -52,6 +52,14 @@ async function createVisualization() {
       .attr("viewBox", [-width / 2, -height / 2, width, height])
       .style("font", "10px sans-serif");
 
+    svg.append("text")
+      .attr("x", -width / 2 + 20)
+      .attr("y", -height / 2 + 30)
+      .attr("font-size", "16px")
+      .attr("font-weight", "bold")
+      .attr("fill", "white")
+      .text("Visualizing a day of VizChitra 2025");
+
     document.body.appendChild(svg.node());  // Append SVG to the body
 
     // --- MODAL LIGHTBOX ---
@@ -175,12 +183,24 @@ async function createVisualization() {
     });
 
     // 6. --- DRAW THUMBNAILS ---
+    const defs = svg.append("defs");
+
     const shapes = plotGroup.selectAll("g.shape")
       .data(metadata)
       .join("g")
       .attr("class", "shape")
       .attr("transform", "translate(0, 0)")
       .attr("opacity", 0);
+
+    shapes.each(function(d, i) {
+      const w = thumbW(d), h = w * getAspectRatio(d);
+      defs.append("clipPath")
+        .attr("id", `thumb-clip-${i}`)
+        .append("rect")
+          .attr("x", -w / 2).attr("y", -h / 2)
+          .attr("width", w).attr("height", h)
+          .attr("rx", 5).attr("ry", 5);
+    });
 
     shapes.transition()
       .duration(900)
@@ -202,7 +222,20 @@ async function createVisualization() {
       .attr("height", (d) => thumbW(d) * getAspectRatio(d))
       .attr("x", (d) => -thumbW(d) / 2)
       .attr("y", (d) => -(thumbW(d) * getAspectRatio(d)) / 2)
-      .attr("preserveAspectRatio", "xMidYMid meet");
+      .attr("preserveAspectRatio", "xMidYMid meet")
+      .attr("clip-path", (d, i) => `url(#thumb-clip-${i})`);
+
+    shapes.append("rect")
+      .attr("class", "thumb-border")
+      .attr("width", (d) => thumbW(d))
+      .attr("height", (d) => thumbW(d) * getAspectRatio(d))
+      .attr("x", (d) => -thumbW(d) / 2)
+      .attr("y", (d) => -(thumbW(d) * getAspectRatio(d)) / 2)
+      .attr("rx", 5).attr("ry", 5)
+      .attr("fill", "none")
+      .attr("stroke", "white")
+      .attr("stroke-width", 2)
+      .style("pointer-events", "none");
 
     // Inline metadata label for photos (shown on hover)
     shapes.filter((d) => ["JPG", "HEIC"].includes(d.extension))
@@ -244,9 +277,16 @@ async function createVisualization() {
 
     // 7. --- INTERACTIVITY ---
 
+    function resizeClip(i, w, h) {
+      defs.select(`#thumb-clip-${i} rect`)
+        .attr("x", -w / 2).attr("y", -h / 2)
+        .attr("width", w).attr("height", h);
+    }
+
     // Photo hover: enlarge thumbnail and show metadata label
     shapes.filter((d) => ["JPG", "HEIC"].includes(d.extension))
-      .on("mouseover", function(event, d) {
+      .on("mouseover", function(event, d, nodes) {
+        const i = shapes.nodes().indexOf(this);
         const g = d3.select(this);
         g.raise();
         g.attr("opacity", 1);
@@ -256,9 +296,15 @@ async function createVisualization() {
           .transition().duration(150)
           .attr("width", w).attr("height", h)
           .attr("x", -w / 2).attr("y", -h / 2);
+        g.select(".thumb-border")
+          .transition().duration(150)
+          .attr("width", w).attr("height", h)
+          .attr("x", -w / 2).attr("y", -h / 2);
+        resizeClip(i, w, h);
         g.select(".info-label").style("display", null);
       })
       .on("mouseleave", function(event, d) {
+        const i = shapes.nodes().indexOf(this);
         const g = d3.select(this);
         g.attr("opacity", targetOpacity(d));
         const w = thumbW(d);
@@ -267,12 +313,18 @@ async function createVisualization() {
           .transition().duration(150)
           .attr("width", w).attr("height", h)
           .attr("x", -w / 2).attr("y", -h / 2);
+        g.select(".thumb-border")
+          .transition().duration(150)
+          .attr("width", w).attr("height", h)
+          .attr("x", -w / 2).attr("y", -h / 2);
+        resizeClip(i, w, h);
         g.select(".info-label").style("display", "none");
       });
 
     // Video hover: enlarge thumbnail
     shapes.filter((d) => !["JPG", "HEIC"].includes(d.extension))
       .on("mouseover", function(event, d) {
+        const i = shapes.nodes().indexOf(this);
         const g = d3.select(this);
         g.raise();
         g.attr("opacity", 1);
@@ -282,9 +334,15 @@ async function createVisualization() {
           .transition().duration(150)
           .attr("width", w).attr("height", h)
           .attr("x", -w / 2).attr("y", -h / 2);
+        g.select(".thumb-border")
+          .transition().duration(150)
+          .attr("width", w).attr("height", h)
+          .attr("x", -w / 2).attr("y", -h / 2);
+        resizeClip(i, w, h);
         g.select(".info-label").style("display", null);
       })
       .on("mouseleave", function(event, d) {
+        const i = shapes.nodes().indexOf(this);
         const g = d3.select(this);
         g.attr("opacity", targetOpacity(d));
         const w = thumbW(d);
@@ -293,6 +351,11 @@ async function createVisualization() {
           .transition().duration(150)
           .attr("width", w).attr("height", h)
           .attr("x", -w / 2).attr("y", -h / 2);
+        g.select(".thumb-border")
+          .transition().duration(150)
+          .attr("width", w).attr("height", h)
+          .attr("x", -w / 2).attr("y", -h / 2);
+        resizeClip(i, w, h);
         g.select(".info-label").style("display", "none");
       });
 
