@@ -6,7 +6,7 @@
 INPUT_DIR="${1:-.}"        # Default: current directory
 OUTPUT_DIR="$INPUT_DIR/compressed"
 CRF=23                     # Quality: 18 (best) → 28 (smallest). 23 is a great default.
-SCALE="1280:720"           # 720p. Use "1920:1080" for 1080p, or "-2:720" to preserve aspect ratio
+SCALE="-2:720"             # 720p, aspect-ratio preserved. Portrait (1080×1920)→405×720, landscape (1920×1080)→1280×720
 
 mkdir -p "$OUTPUT_DIR"
 
