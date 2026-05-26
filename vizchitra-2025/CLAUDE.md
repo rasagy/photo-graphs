@@ -35,7 +35,9 @@ filename, name, extension, date_created, time_created, size, dimensions, duratio
 **Radial layout:**
 - Angle maps hour 6–18 (6AM–6PM) to 0.5π–2.5π (clockwise from bottom)
 - Radius maps minute 0–59 to inner–outer plot radius
-- Spiral gridlines drawn per hour, dashed
+- Straight radial hour lines: dotted (`stroke-dasharray: 1,4`, round caps, stroke-width 1)
+- Spiral gridlines drawn per hour: dashed (`stroke-dasharray: 4,4`)
+- Concentric rings at minutes 0, 15, 30, 45, 60: filled circles drawn outer→inner, `rgba(0,0,0,0.02)` fill (stacks to create subtle gradient); minute=0 ring filled white to clear the center
 
 **Shapes:**
 - All media: thumbnail `<image>` elements centered at the radial position
@@ -43,11 +45,18 @@ filename, name, extension, date_created, time_created, size, dimensions, duratio
 - `HOVER_SCALE = 4`: multiplier applied on mouseover
 - Photos use uppercase `.JPG` thumbnail ext; videos use lowercase `.jpg`
 - Video playback: click toggles inline `<video>` via `foreignObject`; uses `assets/${d.name}.mp4`
+- Each thumbnail clipped to rounded corners via per-element `<clipPath>` in `<defs>` (rx=5); clip rect is resized on hover alongside the image
+- Thumbnails have a 2px white border (`stroke`) + 5px border radius via an overlaid `<rect class="thumb-border">` with `pointer-events: none`
 
 **Hover behavior:**
+- `activeNode` tracks the currently expanded thumbnail; entering a new thumbnail collapses the previous one immediately (prevents stuck-expanded state on fast mouse movement)
 - `g.raise()` brings hovered element to front (SVG DOM order)
 - Opacity goes to 1 on hover, restores to 0.5 on leave
 - Info label (time only, white pill background) shown below expanded thumbnail
+
+**Title:**
+- SVG text element top-left (`-width/2 + 20, -height/2 + 30`), 16px bold, fill `#333`
+- Text: "Visualizing a day of VizChitra 2025"
 
 **Time label:**
 - `formatTime(t)` converts `"HH:MM:SS"` → `"H:MM AM/PM"`

@@ -57,7 +57,7 @@ async function createVisualization() {
       .attr("y", -height / 2 + 30)
       .attr("font-size", "16px")
       .attr("font-weight", "bold")
-      .attr("fill", "white")
+      .attr("fill", "#333")
       .text("Visualizing a day of VizChitra 2025");
 
     document.body.appendChild(svg.node());  // Append SVG to the body
@@ -124,6 +124,15 @@ async function createVisualization() {
 
     // 4. --- ADD RADIAL GRIDLINES FOR HOURS ---
     const gridGroup = plotGroup.append("g").attr("class", "gridlines");
+
+    gridGroup.selectAll("circle.radial-ring")
+      .data([60, 45, 30, 15, 0])
+      .join("circle")
+      .attr("class", "radial-ring")
+      .attr("r", (d) => radiusScale(d))
+      .attr("fill", (d) => d === 0 ? "white" : "rgba(0,0,0,0.02)")
+      .attr("stroke", "none");
+
     const hours = d3.range(6, 19);
 
     gridGroup.selectAll("line")
@@ -134,8 +143,10 @@ async function createVisualization() {
       .attr("x2", (d) => plotRadius * Math.cos(angleScale(d)))
       .attr("y2", (d) => plotRadius * Math.sin(angleScale(d)))
       .attr("stroke", "#ccc")
-      .attr("stroke-width", 0.5)
-      .attr("stroke-opacity", 0.7);
+      .attr("stroke-width", 1)
+      .attr("stroke-opacity", 0.7)
+      .attr("stroke-dasharray", "1,4")
+      .attr("stroke-linecap", "round");
 
     gridGroup.selectAll("text.hour-label")
       .data(hours)
@@ -283,81 +294,48 @@ async function createVisualization() {
         .attr("width", w).attr("height", h);
     }
 
-    // Photo hover: enlarge thumbnail and show metadata label
-    shapes.filter((d) => ["JPG", "HEIC"].includes(d.extension))
-      .on("mouseover", function(event, d, nodes) {
-        const i = shapes.nodes().indexOf(this);
-        const g = d3.select(this);
-        g.raise();
-        g.attr("opacity", 1);
-        const w = thumbW(d) * HOVER_SCALE;
-        const h = w * getAspectRatio(d);
-        g.select("image")
-          .transition().duration(150)
-          .attr("width", w).attr("height", h)
-          .attr("x", -w / 2).attr("y", -h / 2);
-        g.select(".thumb-border")
-          .transition().duration(150)
-          .attr("width", w).attr("height", h)
-          .attr("x", -w / 2).attr("y", -h / 2);
-        resizeClip(i, w, h);
-        g.select(".info-label").style("display", null);
-      })
-      .on("mouseleave", function(event, d) {
-        const i = shapes.nodes().indexOf(this);
-        const g = d3.select(this);
-        g.attr("opacity", targetOpacity(d));
-        const w = thumbW(d);
-        const h = w * getAspectRatio(d);
-        g.select("image")
-          .transition().duration(150)
-          .attr("width", w).attr("height", h)
-          .attr("x", -w / 2).attr("y", -h / 2);
-        g.select(".thumb-border")
-          .transition().duration(150)
-          .attr("width", w).attr("height", h)
-          .attr("x", -w / 2).attr("y", -h / 2);
-        resizeClip(i, w, h);
-        g.select(".info-label").style("display", "none");
-      });
+    let activeNode = null;
 
-    // Video hover: enlarge thumbnail
-    shapes.filter((d) => !["JPG", "HEIC"].includes(d.extension))
-      .on("mouseover", function(event, d) {
-        const i = shapes.nodes().indexOf(this);
-        const g = d3.select(this);
-        g.raise();
-        g.attr("opacity", 1);
-        const w = thumbW(d) * HOVER_SCALE;
-        const h = w * getAspectRatio(d);
-        g.select("image")
-          .transition().duration(150)
-          .attr("width", w).attr("height", h)
-          .attr("x", -w / 2).attr("y", -h / 2);
-        g.select(".thumb-border")
-          .transition().duration(150)
-          .attr("width", w).attr("height", h)
-          .attr("x", -w / 2).attr("y", -h / 2);
-        resizeClip(i, w, h);
-        g.select(".info-label").style("display", null);
-      })
-      .on("mouseleave", function(event, d) {
-        const i = shapes.nodes().indexOf(this);
-        const g = d3.select(this);
-        g.attr("opacity", targetOpacity(d));
-        const w = thumbW(d);
-        const h = w * getAspectRatio(d);
-        g.select("image")
-          .transition().duration(150)
-          .attr("width", w).attr("height", h)
-          .attr("x", -w / 2).attr("y", -h / 2);
-        g.select(".thumb-border")
-          .transition().duration(150)
-          .attr("width", w).attr("height", h)
-          .attr("x", -w / 2).attr("y", -h / 2);
-        resizeClip(i, w, h);
-        g.select(".info-label").style("display", "none");
-      });
+    function collapseNode(node) {
+      if (!node) return;
+      const g = d3.select(node);
+      const d = g.datum();
+      const i = shapes.nodes().indexOf(node);
+      const w = thumbW(d);
+      const h = w * getAspectRatio(d);
+      g.attr("opacity", targetOpacity(d));
+      g.select("image").transition().duration(150)
+        .attr("width", w).attr("height", h).attr("x", -w / 2).attr("y", -h / 2);
+      g.select(".thumb-border").transition().duration(150)
+        .attr("width", w).attr("height", h).attr("x", -w / 2).attr("y", -h / 2);
+      resizeClip(i, w, h);
+      g.select(".info-label").style("display", "none");
+    }
+
+    function expandNode(node, d) {
+      if (activeNode !== node) collapseNode(activeNode);
+      activeNode = node;
+      const i = shapes.nodes().indexOf(node);
+      const g = d3.select(node);
+      g.raise();
+      g.attr("opacity", 1);
+      const w = thumbW(d) * HOVER_SCALE;
+      const h = w * getAspectRatio(d);
+      g.select("image").transition().duration(150)
+        .attr("width", w).attr("height", h).attr("x", -w / 2).attr("y", -h / 2);
+      g.select(".thumb-border").transition().duration(150)
+        .attr("width", w).attr("height", h).attr("x", -w / 2).attr("y", -h / 2);
+      resizeClip(i, w, h);
+      g.select(".info-label").style("display", null);
+    }
+
+    function onLeave(node, d) {
+      if (activeNode === node) activeNode = null;
+      collapseNode(node);
+    }
+
+    shapes.on("mouseover", function(event, d) { expandNode(this, d); })
+          .on("mouseleave", function(event, d) { onLeave(this, d); });
 
     // Click any thumbnail to open modal lightbox
     shapes.on("click", function(event, d) {
