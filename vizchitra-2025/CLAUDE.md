@@ -75,6 +75,14 @@ filename, name, extension, date_created, time_created, size, dimensions, duratio
 - `targetOpacity(d)` returns 0.5 if item passes both filters, 0 if not — used by `updateVisibility()` and mouseleave handlers
 - Hidden items get `pointer-events: none` so they don't intercept hover
 
+**Annotations (d3-annotation library):**
+- Loaded via CDN alongside D3; all annotation elements live in `annotationArcGroup` (`g.annotation-arcs`) appended to `plotGroup`
+- Group starts at `opacity: 0` and fades in after 3500ms (once all photo load animations finish)
+- Two types in use:
+  - **Time-range arcs** — SVG `<path>` drawn at `plotRadius + 10` using `annotationArcPath(startHour, startMin, endHour, endMin)`; clockwise arc (`sweep-flag=1`); label anchored to arc midpoint via `arcMidPos()`. Current ranges: "Setup" 8:00–9:15 AM (orange `#E07B39`), "Panel" 2:30–3:15 PM (purple `#6A4E9C`)
+  - **Point callouts** — `d3.annotationCallout` pointing to a specific photo's exact radial position (`x`/`y` computed from `angleScale` + `radiusScale`). Current example: `IMG_0149` at 12:58 labelled "Group photo at Lunch!" (green `#2A7D4F`)
+- See `Annotations-reference.md` for full API notes and arc math explanation
+
 ## Notes
 
 - SVG is appended directly to `body`, not into `#chart` div

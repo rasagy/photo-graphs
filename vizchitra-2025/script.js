@@ -193,6 +193,86 @@ async function createVisualization() {
         .attr("stroke-dasharray", "4,4");
     });
 
+    // 5. --- ANNOTATIONS ---
+    const annotationArcR = plotRadius + 10;
+
+    function timeToAngle(hour, minute) {
+      return angleScale(hour + minute / 60);
+    }
+
+    function annotationArcPath(startHour, startMin, endHour, endMin) {
+      const r = annotationArcR;
+      const a1 = timeToAngle(startHour, startMin);
+      const a2 = timeToAngle(endHour, endMin);
+      const x1 = r * Math.cos(a1), y1 = r * Math.sin(a1);
+      const x2 = r * Math.cos(a2), y2 = r * Math.sin(a2);
+      const large = (a2 - a1) > Math.PI ? 1 : 0;
+      return `M ${x1},${y1} A ${r},${r} 0 ${large},1 ${x2},${y2}`;
+    }
+
+    function arcMidPos(startHour, startMin, endHour, endMin) {
+      const a1 = timeToAngle(startHour, startMin);
+      const a2 = timeToAngle(endHour, endMin);
+      const aMid = (a1 + a2) / 2;
+      const r = annotationArcR;
+      return { x: r * Math.cos(aMid), y: r * Math.sin(aMid) };
+    }
+
+    const annotationArcGroup = plotGroup.append("g").attr("class", "annotation-arcs").attr("opacity", 0);
+
+    // Setup arc: 8:00AM – 9:15AM
+    annotationArcGroup.append("path")
+      .attr("d", annotationArcPath(8, 0, 9, 15))
+      .attr("fill", "none").attr("stroke", "#E07B39").attr("stroke-width", 3).attr("stroke-linecap", "round");
+
+    // Panel arc: 2:30PM – 3:15PM
+    annotationArcGroup.append("path")
+      .attr("d", annotationArcPath(14, 30, 15, 15))
+      .attr("fill", "none").attr("stroke", "#6A4E9C").attr("stroke-width", 3).attr("stroke-linecap", "round");
+
+    const setupPos = arcMidPos(8, 0, 9, 15);
+    const panelPos = arcMidPos(14, 30, 15, 15);
+
+    // Point annotation: IMG_0149 at 12:58 (hour=12, minute=58)
+    const lunchAngle = timeToAngle(12, 58);
+    const lunchR = d3.scaleLinear().domain([0, 59]).range([plotRadius / 5, plotRadius])(58);
+    const lunchPos = { x: lunchR * Math.cos(lunchAngle), y: lunchR * Math.sin(lunchAngle) };
+
+    const annotations = [
+      {
+        note: { title: "Setup", bgPadding: 5 },
+        x: setupPos.x, y: setupPos.y,
+        dx: -20, dy: -35,
+        color: "#E07B39"
+      },
+      {
+        note: { title: "Panel", bgPadding: 5 },
+        x: panelPos.x, y: panelPos.y,
+        dx: 20, dy: -40,
+        color: "#6A4E9C"
+      },
+      {
+        note: { title: "Group photo at Lunch!", wrap: 100, bgPadding: 5 },
+        x: lunchPos.x, y: lunchPos.y,
+        dx: 45, dy: -30,
+        color: "#2A7D4F"
+      }
+    ];
+
+    const makeAnnotations = d3.annotation()
+      .type(d3.annotationCallout)
+      .annotations(annotations);
+
+    annotationArcGroup.append("g")
+      .attr("class", "d3-annotation")
+      .call(makeAnnotations);
+
+    // Fade in after all photos finish animating (max delay 2500ms + duration 900ms)
+    annotationArcGroup.transition()
+      .delay(3500)
+      .duration(600)
+      .attr("opacity", 1);
+
     // 6. --- DRAW THUMBNAILS ---
     const defs = svg.append("defs");
 
