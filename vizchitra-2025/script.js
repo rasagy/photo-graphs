@@ -34,6 +34,7 @@ async function createVisualization() {
     // Filter state
     const activeTypes = new Set(["JPG", "HEIC", "MOV"]);
     const activeOrientations = new Set(["horizontal", "vertical"]);
+    let showAnnotations = false;
 
     function targetOpacity(d) {
       return activeTypes.has(d.extension) && activeOrientations.has(d.orientation) ? 0.5 : 0;
@@ -130,7 +131,7 @@ async function createVisualization() {
       .join("circle")
       .attr("class", "radial-ring")
       .attr("r", (d) => radiusScale(d))
-      .attr("fill", (d) => d === 0 ? "white" : "rgba(0,0,0,0.02)")
+      .attr("fill", (d) => d === 0 ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.02)")
       .attr("stroke", "none");
 
     const hours = d3.range(6, 19);
@@ -142,9 +143,9 @@ async function createVisualization() {
       .attr("y1", 0)
       .attr("x2", (d) => plotRadius * Math.cos(angleScale(d)))
       .attr("y2", (d) => plotRadius * Math.sin(angleScale(d)))
-      .attr("stroke", "#ccc")
+      .attr("stroke", "#333")
       .attr("stroke-width", 1)
-      .attr("stroke-opacity", 0.7)
+      .attr("stroke-opacity", 0.5)
       .attr("stroke-dasharray", "1,4")
       .attr("stroke-linecap", "round");
 
@@ -188,7 +189,7 @@ async function createVisualization() {
         .datum(spiralData)
         .attr("d", spiralLine)
         .attr("fill", "none")
-        .attr("stroke", "#ddd")
+        .attr("stroke", "#bbb")
         .attr("stroke-width", 1)
         .attr("stroke-dasharray", "4,4");
     });
@@ -271,7 +272,7 @@ async function createVisualization() {
     annotationArcGroup.transition()
       .delay(3500)
       .duration(600)
-      .attr("opacity", 1);
+      .attr("opacity", showAnnotations ? 1 : 0);
 
     // 6. --- DRAW THUMBNAILS ---
     const defs = svg.append("defs");
@@ -463,6 +464,15 @@ async function createVisualization() {
     makeButton(filterPanel, 78, 54, 54, "Vertical",
       () => activeOrientations.has("vertical"),
       () => { if (activeOrientations.has("vertical")) activeOrientations.delete("vertical"); else activeOrientations.add("vertical"); }
+    );
+
+    filterPanel.append("text").attr("y", 92).attr("font-size", "9px").attr("fill", "#aaa").attr("letter-spacing", 1).text("ANNOTATIONS");
+    makeButton(filterPanel, 0, 100, 88, "Show labels",
+      () => showAnnotations,
+      () => {
+        showAnnotations = !showAnnotations;
+        annotationArcGroup.transition().duration(300).attr("opacity", showAnnotations ? 1 : 0);
+      }
     );
 
   } catch (error) {
