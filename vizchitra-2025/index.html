@@ -53,9 +53,92 @@
     .has-active g.shape.active-node {
       filter: none;
     }
+
+    /* ── Gradient background ──────────────────────────────────────────── */
+    #gradient-bg {
+      position: fixed; inset: 0; z-index: -1;
+      pointer-events: none; overflow: hidden;
+      background: #fff;
+    }
+
+    /* ── Gradient dev panel ───────────────────────────────────────────── */
+    #grad-panel {
+      position: fixed; bottom: 20px; left: 20px; z-index: 9999;
+      font-family: 'Helvetica Neue', sans-serif; font-size: 11px; color: #333;
+      user-select: none;
+    }
+    #grad-panel-toggle {
+      display: block; padding: 5px 10px; border-radius: 20px;
+      background: rgba(255,255,255,0.92); border: 1px solid #ddd;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12); cursor: pointer;
+      font-size: 11px; color: #555; letter-spacing: 0.03em;
+      backdrop-filter: blur(8px);
+    }
+    #grad-panel-body {
+      display: none; margin-top: 6px;
+      background: rgba(255,255,255,0.96); border: 1px solid #e0e0e0;
+      border-radius: 10px; padding: 12px 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+      backdrop-filter: blur(10px);
+      width: 230px;
+    }
+    #grad-panel-body.open { display: block; }
+    .gp-section { margin-bottom: 10px; }
+    .gp-label { font-size: 9px; letter-spacing: 0.08em; color: #aaa; text-transform: uppercase; margin-bottom: 5px; }
+    .gp-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+    .gp-btn {
+      padding: 3px 7px; border-radius: 4px; border: 1px solid #ccc;
+      background: #f5f5f5; color: #555; cursor: pointer; font-size: 10px;
+    }
+    .gp-btn.active { background: #333; color: #fff; border-color: #333; }
+    .gp-slider-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+    .gp-slider-row label { width: 60px; font-size: 10px; color: #666; }
+    .gp-slider-row input[type=range] { flex: 1; height: 3px; accent-color: #555; }
+    .gp-slider-row span { width: 26px; text-align: right; font-size: 10px; color: #888; }
+    .gp-colors { display: flex; gap: 5px; flex-wrap: wrap; }
+    .gp-swatch {
+      width: 18px; height: 18px; border-radius: 50%; cursor: pointer;
+      border: 2px solid transparent; box-shadow: 0 0 0 1px #ccc;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .gp-swatch.off { opacity: 0.25; transform: scale(0.85); }
+    .gp-desc { font-size: 9.5px; color: #999; margin-top: 4px; font-style: italic; }
   </style>
 </head>
 <body>
+  <div id="gradient-bg" aria-hidden="true"></div>
+  <div id="grad-panel">
+    <button id="grad-panel-toggle">✦ Gradient</button>
+    <div id="grad-panel-body">
+      <div class="gp-section">
+        <div class="gp-label">Approach</div>
+        <div class="gp-btns" id="gp-approach-btns"></div>
+        <div class="gp-desc" id="gp-desc"></div>
+      </div>
+      <div class="gp-section">
+        <div class="gp-label">Parameters</div>
+        <div class="gp-slider-row">
+          <label>Intensity</label>
+          <input type="range" id="gp-intensity" min="2" max="30" step="1" value="12">
+          <span id="gp-intensity-val">12%</span>
+        </div>
+        <div class="gp-slider-row">
+          <label>Blur</label>
+          <input type="range" id="gp-blur" min="0" max="200" step="5" value="80">
+          <span id="gp-blur-val">80px</span>
+        </div>
+        <div class="gp-slider-row">
+          <label>Spread</label>
+          <input type="range" id="gp-spread" min="20" max="120" step="5" value="60">
+          <span id="gp-spread-val">60%</span>
+        </div>
+      </div>
+      <div class="gp-section">
+        <div class="gp-label">Colors</div>
+        <div class="gp-colors" id="gp-colors"></div>
+      </div>
+    </div>
+  </div>
   <div id="chart"></div>
 
   <!-- Load D3.js -->
@@ -65,5 +148,263 @@
 
   <!-- Your visualization code will go here -->
   <script src="script.js"></script>
+
+  <!-- Gradient background system -->
+  <script>
+  (function () {
+    'use strict';
+
+    // Colors sampled from VizChitra 2025 branding (the wavy banner)
+    const COLORS = [
+      { name: 'orange',   r: 224, g: 123, b:  57, hex: '#E07B39' },
+      { name: 'teal',     r:  91, g: 196, b: 180, hex: '#5BC4B4' },
+      { name: 'yellow',   r: 240, g: 192, b:  96, hex: '#F0C060' },
+      { name: 'lavender', r: 155, g: 142, b: 196, hex: '#9B8EC4' },
+      { name: 'pink',     r: 232, g: 139, b: 173, hex: '#E88BAD' },
+      { name: 'blue',     r: 168, g: 216, b: 232, hex: '#A8D8E8' },
+    ];
+
+    // Blob layout: normalized positions + ellipse radii (0–1 of viewport)
+    const BLOBS = [
+      { cx: 0.10, cy: 0.15, rx: 0.42, ry: 0.36, color: 'orange'   },
+      { cx: 0.88, cy: 0.10, rx: 0.38, ry: 0.44, color: 'teal'     },
+      { cx: 0.52, cy: 0.90, rx: 0.52, ry: 0.38, color: 'yellow'   },
+      { cx: 0.80, cy: 0.60, rx: 0.36, ry: 0.44, color: 'lavender' },
+      { cx: 0.20, cy: 0.78, rx: 0.38, ry: 0.32, color: 'pink'     },
+      { cx: 0.56, cy: 0.40, rx: 0.32, ry: 0.38, color: 'blue'     },
+    ];
+
+    const APPROACHES = [
+      { name: 'CSS Radial',  desc: 'Pure CSS stacked radial-gradient layers — no DOM or blur' },
+      { name: 'Div Blobs',   desc: 'Blurred <div> elements with mix-blend-mode: multiply' },
+      { name: 'SVG Blur',    desc: 'SVG ellipses with feGaussianBlur filter in <defs>' },
+      { name: 'Conic+Blur',  desc: 'Conic gradient blurred heavily with CSS filter' },
+      { name: 'Canvas',      desc: 'Canvas 2D radial fills, CSS blur on <canvas> element' },
+    ];
+
+    const state = {
+      approach: 2,      // 1-indexed
+      intensity: 0.12,  // 0.02–0.30
+      blur: 80,         // px
+      spread: 60,       // 20–120 (percentage units)
+      enabled: new Set(COLORS.map(c => c.name)),
+    };
+
+    const bgEl = document.getElementById('gradient-bg');
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    const cm = Object.fromEntries(COLORS.map(c => [c.name, c]));
+
+    function activeBlobs() { return BLOBS.filter(b => state.enabled.has(b.color)); }
+
+    function rgba(c, a) { return `rgba(${c.r},${c.g},${c.b},${a.toFixed(3)})`; }
+
+    function blobRx(b) { return b.rx * state.spread / 50; }
+    function blobRy(b) { return b.ry * state.spread / 50; }
+
+    // ── Approach 1: CSS stacked radial-gradient ───────────────────────────────
+    function drawCSS() {
+      const blobs = activeBlobs();
+      bgEl.innerHTML = '';
+      bgEl.style.filter = '';
+      bgEl.style.transform = '';
+      if (!blobs.length) { bgEl.style.background = '#fff'; return; }
+      const layers = blobs.map(b => {
+        const c = cm[b.color];
+        const rx = (blobRx(b) * 100).toFixed(0) + '%';
+        const ry = (blobRy(b) * 100).toFixed(0) + '%';
+        const cx = (b.cx * 100).toFixed(0) + '%';
+        const cy = (b.cy * 100).toFixed(0) + '%';
+        return `radial-gradient(ellipse ${rx} ${ry} at ${cx} ${cy}, ${rgba(c, state.intensity)} 0%, transparent 70%)`;
+      });
+      bgEl.style.background = [...layers, '#fff'].join(', ');
+    }
+
+    // ── Approach 2: Blurred <div> blobs with multiply blend ─────────────────
+    function drawDivBlobs() {
+      const blobs = activeBlobs();
+      bgEl.style.background = '#fff';
+      bgEl.style.filter = '';
+      bgEl.style.transform = '';
+      bgEl.innerHTML = blobs.map(b => {
+        const c = cm[b.color];
+        const alpha = Math.min(state.intensity * 3.5, 0.85);
+        return `<div style="
+          position:absolute;
+          left:${(b.cx * 100).toFixed(1)}%;top:${(b.cy * 100).toFixed(1)}%;
+          width:${(blobRx(b) * 200).toFixed(0)}%;height:${(blobRy(b) * 200).toFixed(0)}%;
+          transform:translate(-50%,-50%);
+          background:${rgba(c, alpha)};
+          border-radius:50%;
+          filter:blur(${state.blur}px);
+          mix-blend-mode:multiply;
+        "></div>`;
+      }).join('');
+    }
+
+    // ── Approach 3: SVG with feGaussianBlur ──────────────────────────────────
+    function drawSVGBlur() {
+      const blobs = activeBlobs();
+      bgEl.style.background = '#fff';
+      bgEl.style.filter = '';
+      bgEl.style.transform = '';
+      if (!blobs.length) { bgEl.innerHTML = ''; return; }
+      const VW = 1000, VH = 700;
+      const stdDev = (state.blur * 0.45).toFixed(1);
+      const alpha = Math.min(state.intensity * 3.5, 0.85);
+      const ellipses = blobs.map(b => {
+        const c = cm[b.color];
+        return `<ellipse cx="${(b.cx * VW).toFixed(0)}" cy="${(b.cy * VH).toFixed(0)}"
+          rx="${(blobRx(b) * VW * 0.5).toFixed(0)}" ry="${(blobRy(b) * VH * 0.5).toFixed(0)}"
+          fill="${rgba(c, alpha)}"/>`;
+      }).join('');
+      bgEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="xMidYMid slice"
+        style="position:absolute;inset:0;width:100%;height:100%">
+        <defs>
+          <filter id="svgb" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="${stdDev}"/>
+          </filter>
+        </defs>
+        <rect width="${VW}" height="${VH}" fill="white"/>
+        <g filter="url(#svgb)" style="mix-blend-mode:multiply">${ellipses}</g>
+      </svg>`;
+    }
+
+    // ── Approach 4: Conic gradient + heavy CSS blur ──────────────────────────
+    function drawConic() {
+      const active = COLORS.filter(c => state.enabled.has(c.name));
+      bgEl.innerHTML = '';
+      bgEl.style.filter = '';
+      bgEl.style.transform = '';
+      if (!active.length) { bgEl.style.background = '#fff'; return; }
+      const step = 360 / active.length;
+      const alpha = Math.min(state.intensity * 5, 0.95);
+      const stops = active.map((c, i) =>
+        `${rgba(c, alpha)} ${(i * step).toFixed(0)}deg ${((i + 1) * step).toFixed(0)}deg`
+      ).join(', ');
+      // Inner div scaled up to avoid visible blurred edges
+      bgEl.style.background = '#fff';
+      bgEl.innerHTML = `<div style="
+        position:absolute; inset:-30%; border-radius:50%;
+        background:conic-gradient(from 20deg at 42% 55%, ${stops}), #fff;
+        filter:blur(${state.blur}px);
+        mix-blend-mode:multiply;
+      "></div>`;
+    }
+
+    // ── Approach 5: Canvas 2D painted blobs ──────────────────────────────────
+    function drawCanvas() {
+      const blobs = activeBlobs();
+      bgEl.style.background = '#fff';
+      bgEl.style.filter = '';
+      bgEl.style.transform = '';
+      let canvas = bgEl.querySelector('canvas');
+      if (!canvas) {
+        bgEl.innerHTML = '';
+        canvas = document.createElement('canvas');
+        canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
+        bgEl.appendChild(canvas);
+      } else {
+        bgEl.innerHTML = '';
+        canvas = document.createElement('canvas');
+        canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
+        bgEl.appendChild(canvas);
+      }
+      const W = window.innerWidth, H = window.innerHeight;
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, W, H);
+      const alpha = Math.min(state.intensity * 2.5, 0.75);
+      for (const b of blobs) {
+        const c = cm[b.color];
+        const cx = b.cx * W, cy = b.cy * H;
+        const rx = blobRx(b) * W * 0.55, ry = blobRy(b) * H * 0.55;
+        const r = Math.max(rx, ry);
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(rx / r, ry / r);
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
+        grad.addColorStop(0, `rgba(${c.r},${c.g},${c.b},${alpha})`);
+        grad.addColorStop(0.6, `rgba(${c.r},${c.g},${c.b},${(alpha * 0.4).toFixed(3)})`);
+        grad.addColorStop(1, `rgba(${c.r},${c.g},${c.b},0)`);
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+      }
+      canvas.style.filter = `blur(${(state.blur * 0.45).toFixed(0)}px)`;
+      canvas.style.mixBlendMode = 'multiply';
+    }
+
+    const RENDERERS = [drawCSS, drawDivBlobs, drawSVGBlur, drawConic, drawCanvas];
+
+    function render() { RENDERERS[state.approach - 1](); }
+
+    // ── Dev panel ────────────────────────────────────────────────────────────
+
+    const toggle = document.getElementById('grad-panel-toggle');
+    const body   = document.getElementById('grad-panel-body');
+    toggle.addEventListener('click', () => body.classList.toggle('open'));
+
+    // Approach buttons
+    const approachContainer = document.getElementById('gp-approach-btns');
+    const descEl = document.getElementById('gp-desc');
+    APPROACHES.forEach((a, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'gp-btn' + (i + 1 === state.approach ? ' active' : '');
+      btn.textContent = a.name;
+      btn.addEventListener('click', () => {
+        state.approach = i + 1;
+        approachContainer.querySelectorAll('.gp-btn').forEach((b, j) =>
+          b.classList.toggle('active', j === i));
+        descEl.textContent = APPROACHES[i].desc;
+        render();
+      });
+      approachContainer.appendChild(btn);
+    });
+    descEl.textContent = APPROACHES[state.approach - 1].desc;
+
+    // Sliders
+    function wireSlider(id, valId, suffix, getter, setter) {
+      const el = document.getElementById(id);
+      const valEl = document.getElementById(valId);
+      el.value = getter();
+      valEl.textContent = getter() + suffix;
+      el.addEventListener('input', () => {
+        setter(+el.value);
+        valEl.textContent = el.value + suffix;
+        render();
+      });
+    }
+    wireSlider('gp-intensity', 'gp-intensity-val', '%',
+      () => Math.round(state.intensity * 100),
+      v => { state.intensity = v / 100; });
+    wireSlider('gp-blur', 'gp-blur-val', 'px',
+      () => state.blur, v => { state.blur = v; });
+    wireSlider('gp-spread', 'gp-spread-val', '%',
+      () => state.spread, v => { state.spread = v; });
+
+    // Color swatches
+    const colorContainer = document.getElementById('gp-colors');
+    COLORS.forEach(c => {
+      const sw = document.createElement('div');
+      sw.className = 'gp-swatch' + (state.enabled.has(c.name) ? '' : ' off');
+      sw.style.background = c.hex;
+      sw.title = c.name;
+      sw.addEventListener('click', () => {
+        if (state.enabled.has(c.name)) state.enabled.delete(c.name);
+        else state.enabled.add(c.name);
+        sw.classList.toggle('off', !state.enabled.has(c.name));
+        render();
+      });
+      colorContainer.appendChild(sw);
+    });
+
+    render();
+  })();
+  </script>
 </body>
 </html>
