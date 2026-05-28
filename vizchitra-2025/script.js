@@ -120,7 +120,7 @@ async function createVisualization() {
     }
     const modal = createModal();
 
-    const plotGroup = svg.append("g");
+    const plotGroup = svg.append("g").attr("class", "plot-group");
 
     // 4. --- ADD RADIAL GRIDLINES FOR HOURS ---
     const gridGroup = plotGroup.append("g").attr("class", "gridlines");
@@ -384,6 +384,7 @@ async function createVisualization() {
       const w = thumbW(d);
       const h = w * getAspectRatio(d);
       g.attr("opacity", targetOpacity(d));
+      g.classed("active-node", false);
       g.select("image").transition().duration(150)
         .attr("width", w).attr("height", h).attr("x", -w / 2).attr("y", -h / 2);
       g.select(".thumb-border").transition().duration(150)
@@ -399,6 +400,8 @@ async function createVisualization() {
       const g = d3.select(node);
       g.raise();
       g.attr("opacity", 1);
+      g.classed("active-node", true);
+      d3.select(node.parentNode).classed("has-active", true);
       const w = thumbW(d) * HOVER_SCALE;
       const h = w * getAspectRatio(d);
       g.select("image").transition().duration(150)
@@ -412,6 +415,7 @@ async function createVisualization() {
     function onLeave(node, d) {
       if (activeNode === node) activeNode = null;
       collapseNode(node);
+      if (activeNode === null) d3.select(node.parentNode).classed("has-active", false);
     }
 
     shapes.on("mouseover", function(event, d) { expandNode(this, d); })

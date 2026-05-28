@@ -44,6 +44,15 @@
       margin: 0.7rem 0 0; text-align: center;
       font-family: sans-serif; font-size: 0.85rem; color: #555;
     }
+    g.shape {
+      transition: filter 200ms ease;
+    }
+    .has-active g.shape {
+      filter: blur(2px);
+    }
+    .has-active g.shape.active-node {
+      filter: none;
+    }
   </style>
 </head>
 <body>
