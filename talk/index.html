@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Photo-graph-ie: Art of turning photos into graphs — Talk by Rasagy Sharma at IndieWebClub Bangalore, May 2026">
+  <title>Photo-graph-ie — Rasagy Sharma</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,401,700,701,900,901,1,2&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:     #F4F4F4;
+      --text:   #333333;
+      --accent: #00449E;
+      --white:  #FFFFFF;
+      --font:   'Satoshi', sans-serif;
+      --bar-h:  2.25rem;
+      --pad:    clamp(1.5rem, 5vw, 4rem);
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: var(--font);
+      color: var(--text);
+    }
+
+    /* ─── Deck ─────────────────────────────────────────────── */
+    #deck {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      bottom: var(--bar-h);
+    }
+
+    .slide {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      border-top: 4px solid var(--accent);
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .slide.active { display: flex; }
+
+    /* ─── Bottom bar ────────────────────────────────────────── */
+    #bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--bar-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      border-top: 1px solid var(--text);
+      background: var(--bg);
+      font-size: 0.7rem;
+      letter-spacing: 0.03em;
+      z-index: 100;
+    }
+
+    #bar a {
+      color: var(--accent);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    #bar-title {
+      text-align: center;
+      opacity: 0.55;
+      padding: 0 1rem;
+    }
+
+    #bar-num { white-space: nowrap; }
+
+    /* ─── Nav buttons ───────────────────────────────────────── */
+    .nav-btn {
+      position: fixed;
+      top: calc(50% - var(--bar-h) / 2);
+      transform: translateY(-50%);
+      background: transparent;
+      border: 1px solid var(--text);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 1rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      cursor: pointer;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 100ms, color 100ms, border-color 100ms;
+      line-height: 1;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: var(--accent);
+      color: var(--white);
+      border-color: var(--accent);
+    }
+
+    .nav-btn:disabled { opacity: 0.15; cursor: default; }
+    #btn-prev { left: 0.5rem; }
+    #btn-next { right: 0.5rem; }
+
+    /* ─── Shared helpers ────────────────────────────────────── */
+    .light { font-weight: 400; font-style:italic;}
+
+    hr-strong {
+      display: block;
+      border: none;
+      border-top: 2px solid var(--text);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SLIDE 1 — Title
+    ════════════════════════════════════════════════════════════ */
+    .s1 {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: var(--pad);
+    }
+
+    .s1-title {
+      font-size: clamp(3rem, 11vw, 8rem);
+      font-weight: 700;
+      line-height: 1.0;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .s1-subtitle {
+      font-size: clamp(0.9rem, 2.5vw, 1.75rem);
+      font-weight: 400;
+      margin-top: 0.4em;
+      margin-bottom: auto;
+    }
+
+    .s1-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+      border-top: 2px solid var(--text);
+      padding-top: 1.25rem;
+    }
+
+    .s1-meta p {
+      font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 540px) {
+      .s1-meta { grid-template-columns: 1fr; gap: 0.75rem; }
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SLIDES 2 & 9 — Quote
+    ════════════════════════════════════════════════════════════ */
+    .quote-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: var(--pad);
+    }
+
+    .quote-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: clamp(1rem, 4vw, 3.5rem);
+      align-items: start;
+    }
+
+    .quote-mark {
+      font-size: clamp(5rem, 14vw, 11rem);
+      font-weight: 700;
+      line-height: 0.75;
+      color: var(--accent);
+      user-select: none;
+      margin-top: 0.1em;
+    }
+
+    .quote-body {
+      display: flex;
+      flex-direction: column;
+      padding-top: 0.5rem;
+    }
+
+    blockquote {
+      font-size: clamp(2.5rem, 6vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    cite {
+      display: block;
+      margin-top: 1.25rem;
+      font-size: clamp(0.9rem, 2.2vw, 1.75rem);
+      font-style: normal;
+      font-weight: 400;
+      opacity: 0.45;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SLIDE 3 — Photography is more
+    ════════════════════════════════════════════════════════════ */
+    .s3 {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: var(--pad);
+    }
+
+    .s3-title {
+      font-size: clamp(2.5rem, 9vw, 6rem);
+      font-weight: 700;
+      line-height: 1.2;
+      border-top: 10px solid var(--accent);
+      padding-top: 1rem;
+      margin-bottom: 1.75rem;
+      color: var(--accent);
+    }
+
+    .s3-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: clamp(1rem, 3vw, 3rem);
+      margin-top: auto;
+      padding-top: 2rem;
+    }
+
+    .s3-col {
+      font-size: clamp(0.85rem, 1.7vw, 1.15rem);
+      line-height: 1.65;
+      border-top: 2px solid var(--text);
+      padding-top: 0.5em;
+    }
+
+    @media (max-width: 700px) {
+      .s3-cols { grid-template-columns: 1fr; gap: 1rem; }
+      .s3-col { border-left: none; border-top: 1px solid var(--text); padding-left: 0; padding-top: 0.6rem; }
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SLIDE 4 — Love / Hate split
+    ════════════════════════════════════════════════════════════ */
+    #s4 {
+      flex-direction: row;
+      border-top: none;
+      overflow: hidden;
+    }
+
+    .s4-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: var(--pad);
+      border-top: 4px solid transparent;
+      min-height: 0;
+    }
+
+    .s4-panel--light {
+      background: var(--bg);
+      color: var(--text);
+      border-top-color: var(--accent);
+    }
+
+    .s4-panel--dark {
+      background: var(--text);
+      color: var(--white);
+      border-top-color: var(--bg);
+    }
+
+    .s4-label {
+      font-size: clamp(1.6rem, 4.5vw, 3.75rem);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    @media (max-width: 580px) {
+      #s4 { flex-direction: column; overflow-y: hidden; }
+      .s4-panel { justify-content: center; flex: 1; }
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SLIDE 5 — Big question
+    ════════════════════════════════════════════════════════════ */
+    .s5 {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: var(--pad);
+    }
+
+    .s5-text {
+      font-size: clamp(3rem, 6vw, 6rem);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SLIDES 6–8 — Projects
+    ════════════════════════════════════════════════════════════ */
+    .project {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: var(--pad);
+    }
+
+    .project-num {
+      font-size: clamp(2.5rem, 9vw, 6rem);
+      border-top: 10px solid var(--accent);
+      padding-top: 1rem;
+      margin-bottom: 1.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .project-title {
+      font-size: clamp(1.8rem, 5vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-top: 0.2em;
+      flex: 1;
+    }
+
+    .project-foot {
+      border-top: 2px solid var(--text);
+      padding-top: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .project-link {
+      display: inline-block;
+      font-size: clamp(0.75rem, 1.4vw, 0.95rem);
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .project-link:hover { text-decoration: underline; }
+
+    .project-desc {
+      font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+      line-height: 1.55;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SLIDE 10 — How to make these
+    ════════════════════════════════════════════════════════════ */
+    .s10 {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: var(--pad);
+    }
+
+    .s10-title {
+      font-size: clamp(2.5rem, 9vw, 6rem);
+      font-weight: 700;
+      border-top: 10px solid var(--accent);
+      padding-top: 1rem;
+      margin-bottom: 1.75rem;
+      color: var(--accent);
+    }
+
+    .s10-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1.5rem, 5vw, 5rem);
+      flex: 1;
+    }
+
+    .s10-col-label {
+      font-size: clamp(1rem, 1.5vw, 1.5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+    }
+
+    .s10-list {
+      list-style: none;
+    }
+
+    .s10-list li {
+      font-size: clamp(0.9rem, 1.4vw, 1.25rem);
+      line-height: 1.65;
+      padding: 0.5rem 1.75rem;
+      border-bottom: 1px solid rgba(51, 51, 51, 0.18);
+      position: relative;
+    }
+
+    .s10-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    @media (max-width: 600px) {
+      .s10-cols { grid-template-columns: 1fr; }
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SLIDE 11 — Thank you
+    ════════════════════════════════════════════════════════════ */
+    .s11 {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: var(--pad);
+    }
+
+    .s11-title {
+      font-size: clamp(3rem, 10vw, 7rem);
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.0;
+      margin-bottom: auto;
+    }
+
+    .s11-links {
+      list-style: none;
+      border-top: 2px solid var(--text);
+      padding-top: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .s11-links li {
+      font-size: clamp(0.95rem, 2.2vw, 1.4rem);
+      line-height: 1.9;
+    }
+
+    .s11-links a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .s11-links a:hover { text-decoration: underline; }
+
+    .slide a {
+      color: var(--accent);
+      text-decoration:  underline dotted var(--accent);
+    }
+
+    .slide a:hover { text-decoration: underline; }
+
+    /* ─── Responsive footer bar ─────────────────────────────── */
+    @media (max-width: 560px) {
+      #bar-title { display: none; }
+    }
+
+    @media (max-width: 400px) {
+      .nav-btn { width: 1.75rem; height: 1.75rem; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="deck">
+
+  <!-- ─── Slide 1: Title ──────────────────────────────────── -->
+  <section class="slide" id="s1">
+    <div class="s1">
+      <h1 class="s1-title">Photo-<span class="light"><em>graph</em></span>-ie</h1>
+      <p class="s1-subtitle">Art of turning photos into graphs.</p>
+      <div class="s1-meta">
+        <div>
+          <p>Short talk</p>
+          <p><em>ft.</em> 3 demos.</p>
+          <p>By Rasagy Sharma.</p>
+        </div>
+        <div>
+          <p>For IndieWebClub Bangalore's</p>
+          <p>Special Anniversary Edition Meetup.</p>
+          <p>May 30, 2026.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 2: Susan Sontag quote ────────────────────── -->
+  <section class="slide" id="s2">
+    <div class="quote-wrap">
+      <div class="quote-grid">
+        <div class="quote-mark">“</div>
+        <div class="quote-body">
+          <blockquote>To photograph is to confer importance.”</blockquote>
+          <cite>– Susan Sontag</cite>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 3: Photography is more ───────────────────── -->
+  <section class="slide" id="s3">
+    <div class="s3">
+      <h2 class="s3-title">Photography is more than merely <span class="light">taking photos.</span></h2>
+      <div class="s3-cols">
+        <div class="s3-col">We capture moments that we want to hold on to.</div>
+        <div class="s3-col">Context can change what matters: Photos for noticing, remembering, celebrating, archiving, grieving…</div>
+        <div class="s3-col">Photography becomes journaling, a form of data collection.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 4: Love / Hate ────────────────────────────── -->
+  <section class="slide" id="s4">
+    <div class="s4-panel s4-panel--light">
+      <p class="s4-label">I love taking photos.</p>
+    </div>
+    <div class="s4-panel s4-panel--dark">
+      <p class="s4-label">I hate what social media does with them.</p>
+    </div>
+  </section>
+
+  <!-- ─── Slide 5: Big question ───────────────────────────── -->
+  <section class="slide" id="s5">
+    <div class="s5">
+      <p class="s5-text">How can we move beyond rigid, templatized formats, &amp; create unique, expressive ways to show data in a set of photos?</p>
+    </div>
+  </section>
+
+  <!-- ─── Slide 6: Project #1 ─────────────────────────────── -->
+  <section class="slide" id="s6">
+    <div class="project">
+      <div class="project-num">#1</div>
+      <h2 class="project-title">A walk along the streets of Indiranagar</h2>
+      <div class="project-foot">
+        <a class="project-link" href="https://rasagy.in/photo-graphs/indiranagar-steps/" target="_blank" rel="noopener">rasagy.in/photo-graphs/indiranagar-steps/</a>
+        <p class="project-desc">Photos from my neighborhood, transformed into a dynamic composition.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 7: Project #2 ─────────────────────────────── -->
+  <section class="slide" id="s7">
+    <div class="project">
+      <div class="project-num">#2</div>
+      <h2 class="project-title">Blessings from Fuji-san</h2>
+      <div class="project-foot">
+        <a class="project-link" href="https://rasagy.in/photo-graphs/fuji-san/" target="_blank" rel="noopener">rasagy.in/photo-graphs/fuji-san/</a>
+        <p class="project-desc">Mapping photos from a trip to narrate my experience as you scroll by.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 8: Project #3 ─────────────────────────────── -->
+  <section class="slide" id="s8">
+    <div class="project">
+      <div class="project-num">#3</div>
+      <h2 class="project-title">Visualizing moments from a Viz conference</h2>
+      <div class="project-foot">
+        <a class="project-link" href="https://rasagy.in/photo-graphs/vizchitra-2025/" target="_blank" rel="noopener">rasagy.in/photo-graphs/vizchitra-2025/</a>
+        <p class="project-desc">Exploring the experience of a conference, from the eyes of my phone camera.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 9: Geoff Dyer quote ──────────────────────── -->
+  <section class="slide" id="s9">
+    <div class="quote-wrap">
+      <div class="quote-grid">
+        <div class="quote-mark">“</div>
+        <div class="quote-body">
+          <blockquote>Photography is a way of collecting the world, of making a visual inventory that augments our memory and reshapes how we experience time.”</blockquote>
+          <cite>– Geoff Dyer</cite>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 10: How to make these ────────────────────── -->
+  <section class="slide" id="s10">
+    <div class="s10">
+      <h2 class="s10-title">How can you make these?</h2>
+      <div class="s10-cols">
+        <div>
+          <p class="s10-col-label">My process</p>
+          <ul class="s10-list">
+            <li>Curate photos</li>
+            <li>Extract metadata (Python)</li>
+            <li>Add details to a dataset</li>
+            <li>Explore designs</li>
+            <li>Select the right coding library (<a href="https://p5js.org/">P5.js</a> / <a href="https://github.com/mapbox/storytelling">Mapbox</a> / <a href="https://d3js.org/">D3.js</a>…)</li>
+            <li>Host on <a href="https://docs.github.com/en/pages">Github Pages</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="s10-col-label">Resources &amp; Inspiration</p>
+          <ul class="s10-list">
+            <li><a href="https://thecodingtrain.com/">Dan Shiffman (Coding Train)</a></li>
+            <li><a href="https://trcc.timrodenbroeker.de/">Tim Rodenbröker (Creative Coding)</a></li>
+            <li><a href="https://designintech.report/">John Maeda (Design in Tech Report)</a></li>
+            <li><a href="https://manovich.net/index.php/projects/cultural-analytics">Lev Manovich (Culture Studies)</a></li>
+            <li><a href="http://feltron.com/PhotoViz.html">Nicholas Felton (Photoviz book)</a></li>
+            <li><a href="https://internetphonebook.net/">Internet Phone Book</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 11: Thank you ─────────────────────────────── -->
+  <section class="slide" id="s11">
+    <div class="s11">
+      <h2 class="s11-title">Thank you!</h2>
+      <ul class="s11-links">
+        <li><a href="http://rasagy.in/photo-graphs/" target="_blank" rel="noopener">rasagy.in/photo-graphs/</a></li>
+        <li>@rasagy (Linkedin/X)</li>
+        <li>@rasagy.sharma (IG)</li>
+      </ul>
+    </div>
+  </section>
+
+</div><!-- /deck -->
+
+<!-- ─── Bottom bar ─────────────────────────────────────────── -->
+<footer id="bar">
+  <a href="https://rasagy.in" target="_blank" rel="noopener">rasagy.in</a>
+  <span id="bar-title">Photo-graph-ie: Talk at IndieWebClub by Rasagy Sharma</span>
+  <span id="bar-num">1 / 11</span>
+</footer>
+
+<!-- ─── Nav buttons ───────────────────────────────────────── -->
+<button class="nav-btn" id="btn-prev" aria-label="Previous slide">←</button>
+<button class="nav-btn" id="btn-next" aria-label="Next slide">→</button>
+
+<script>
+  const TOTAL = 11;
+  let current = 1;
+
+  function showSlide(n) {
+    n = Math.max(1, Math.min(TOTAL, n));
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.getElementById('s' + n).classList.add('active');
+    document.getElementById('bar-num').textContent = n + ' / ' + TOTAL;
+    document.getElementById('btn-prev').disabled = n === 1;
+    document.getElementById('btn-next').disabled = n === TOTAL;
+    current = n;
+  }
+
+  function goTo(n) {
+    history.pushState(null, '', '#' + n);
+    showSlide(n);
+  }
+
+  function prev() { if (current > 1) goTo(current - 1); }
+  function next() { if (current < TOTAL) goTo(current + 1); }
+
+  function onHashChange() {
+    const n = parseInt(location.hash.slice(1)) || 1;
+    showSlide(n);
+  }
+
+  window.addEventListener('popstate', onHashChange);
+  window.addEventListener('hashchange', onHashChange);
+
+  document.getElementById('btn-prev').addEventListener('click', prev);
+  document.getElementById('btn-next').addEventListener('click', next);
+
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    { e.preventDefault(); prev(); }
+  });
+
+  /* Touch swipe */
+  let tx = 0, ty = 0;
+  document.addEventListener('touchstart', e => {
+    tx = e.touches[0].clientX;
+    ty = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    const dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 44) {
+      dx < 0 ? next() : prev();
+    }
+  }, { passive: true });
+
+  /* Init */
+  showSlide(parseInt(location.hash.slice(1)) || 1);
+</script>
+
+</body>
+</html>
