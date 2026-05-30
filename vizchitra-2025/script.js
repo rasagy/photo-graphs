@@ -61,7 +61,8 @@ async function createVisualization() {
       .attr("fill", "#333")
       .text("Visualizing a day of VizChitra 2025");
 
-    document.body.appendChild(svg.node());  // Append SVG to the body
+    const backLink = document.querySelector('.back-link');
+    document.body.insertBefore(svg.node(), backLink);  // Insert SVG before the back link
 
     // --- MODAL LIGHTBOX ---
     function createModal() {

@@ -373,6 +373,11 @@ async function init() {
     bylineEl.textContent = config.byline;
     footer.appendChild(bylineEl);
   }
+  var backLink = document.createElement("a");
+  backLink.className = "back-link";
+  backLink.href = "../";
+  backLink.textContent = "View more photo-graphs";
+  footer.appendChild(backLink);
   if (config.footer) {
     var footerText = document.createElement("p");
     footerText.innerHTML = config.footer;
