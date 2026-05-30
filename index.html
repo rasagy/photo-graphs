@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo-graphs</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,401,700,701,900,901,1,2&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Satoshi', sans-serif;
+      background: #f5f4f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 64px 48px;
+    }
+
+    header {
+      max-width: 960px;
+      margin: 0 auto 64px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    h1 em {
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    .subtitle {
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      font-weight: 400;
+      color: #555;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px 32px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .project {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .project a {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    /* Folder */
+    .folder {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 0.9;
+    }
+
+    .project.shipped {
+      --folder-back: #1D4ED8;
+      --folder-front: rgba(130, 170, 255, 0.6);
+    }
+
+    .project.empty {
+      --folder-back: #94A3B8;
+      --folder-front: rgba(210, 220, 232, 0.6);
+      cursor: default;
+    }
+
+    /* Layer 1: back (tab + body) — static */
+    .folder-back {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .folder-tab {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 40%;
+      height: 13%;
+      background: var(--folder-back);
+      border-radius: 8px 8px 0 0;
+    }
+
+    .folder-bg {
+      position: absolute;
+      top: 10%;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--folder-back);
+      border-radius: 4px 12px 12px 12px;
+    }
+
+    /* Layer 2: photos — sit over back, under front */
+    .photos {
+      position: absolute;
+      top: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 82%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 6px;
+      z-index: 2;
+    }
+
+    .photos img {
+      width: 34%;
+      height: auto;
+      object-fit: unset;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.9);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .photos img:nth-child(1) {
+      transform: rotate(-8deg) translateY(24px);
+      transform-origin: bottom center;
+    }
+
+    .photos img:nth-child(2) {
+      transform: translateY(16px);
+      transform-origin: bottom center;
+    }
+
+    .photos img:nth-child(3) {
+      transform: rotate(8deg) translateY(24px);
+      transform-origin: bottom center;
+    }
+
+    /* Layer 3: front flap — covers lower portion, tilts open on hover */
+    .folder-front {
+      position: absolute;
+      top: 38%;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--folder-front);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 8px 8px 12px 12px;
+      z-index: 3;
+      transform-origin: bottom center;
+      transition: transform 0.3s ease;
+    }
+
+    /* Hover state */
+    .project.shipped a:hover .folder-front {
+      transform: perspective(500px) rotateX(-18deg) scaleY(0.82);
+    }
+
+    .project.shipped a:hover .photos img:nth-child(1) {
+      transform: rotate(-10deg) translateY(-10px);
+    }
+
+    .project.shipped a:hover .photos img:nth-child(2) {
+      transform: translateY(-18px);
+    }
+
+    .project.shipped a:hover .photos img:nth-child(3) {
+      transform: rotate(10deg) translateY(-10px);
+    }
+
+    /* Title */
+    .project-title {
+      margin-top: 14px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: #1a1a1a;
+    }
+
+    .project.empty .project-title {
+      color: #94A3B8;
+    }
+
+    @media (max-width: 700px) {
+      body { padding: 40px 24px; }
+      header { text-align: center; }
+      .subtitle { margin: 0 auto; }
+      .grid { grid-template-columns: 1fr; gap: 32px; justify-items: center; }
+      .project { align-items: center; width: 280px; }
+      .project a { align-items: center; width: 100%; }
+      .folder { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Photo-<em>graphs</em></h1>
+    <p class="subtitle">Collection of experiments that turn photography into data collection &amp; create novel graphs &amp; visual ways to express what's unique about them.</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- Shipped -->
+    <article class="project shipped">
+      <a href="./fuji-san/">
+        <div class="folder">
+          <div class="folder-back">
+            <div class="folder-tab"></div>
+            <div class="folder-bg"></div>
+          </div>
+          <div class="photos">
+            <img src="./fuji-san/thumbs/1.jpg" alt="">
+            <img src="./fuji-san/thumbs/2.jpg" alt="">
+            <img src="./fuji-san/thumbs/3.jpg" alt="">
+          </div>
+          <div class="folder-front"></div>
+        </div>
+        <p class="project-title">26 Shots of Fuji</p>
+      </a>
+    </article>
+
+    <article class="project shipped">
+      <a href="./vizchitra-2025/">
+        <div class="folder">
+          <div class="folder-back">
+            <div class="folder-tab"></div>
+            <div class="folder-bg"></div>
+          </div>
+          <div class="photos">
+            <img src="./vizchitra-2025/thumbs/1.jpg" alt="">
+            <img src="./vizchitra-2025/thumbs/2.jpg" alt="">
+            <img src="./vizchitra-2025/thumbs/3.jpg" alt="">
+          </div>
+          <div class="folder-front"></div>
+        </div>
+        <p class="project-title">VizChitra 2025</p>
+      </a>
+    </article>
+
+    <article class="project shipped">
+      <a href="./indiranagar-steps/">
+        <div class="folder">
+          <div class="folder-back">
+            <div class="folder-tab"></div>
+            <div class="folder-bg"></div>
+          </div>
+          <div class="photos">
+            <img src="./indiranagar-steps/thumbs/1.jpg" alt="">
+            <img src="./indiranagar-steps/thumbs/2.jpg" alt="">
+            <img src="./indiranagar-steps/thumbs/3.jpg" alt="">
+          </div>
+          <div class="folder-front"></div>
+        </div>
+        <p class="project-title">Walking around Indiranagar</p>
+      </a>
+    </article>
+    <!-- Not started -->
+    <article class="project empty">
+      <div class="folder">
+        <div class="folder-back">
+          <div class="folder-tab"></div>
+          <div class="folder-bg"></div>
+        </div>
+        <div class="folder-front"></div>
+      </div>
+      <p class="project-title">Colors of Kochi Biennale</p>
+    </article>
+
+    <article class="project empty">
+      <div class="folder">
+        <div class="folder-back">
+          <div class="folder-tab"></div>
+          <div class="folder-bg"></div>
+        </div>
+        <div class="folder-front"></div>
+      </div>
+      <p class="project-title">Shot from an Airplane</p>
+    </article>
+
+    <article class="project empty">
+      <div class="folder">
+        <div class="folder-back">
+          <div class="folder-tab"></div>
+          <div class="folder-bg"></div>
+        </div>
+        <div class="folder-front"></div>
+      </div>
+      <p class="project-title">Good Morning NID</p>
+    </article>
+
+    <article class="project empty">
+      <div class="folder">
+        <div class="folder-back">
+          <div class="folder-tab"></div>
+          <div class="folder-bg"></div>
+        </div>
+        <div class="folder-front"></div>
+      </div>
+      <p class="project-title">Fading Selves</p>
+    </article>
+
+    <article class="project empty">
+      <div class="folder">
+        <div class="folder-back">
+          <div class="folder-tab"></div>
+          <div class="folder-bg"></div>
+        </div>
+        <div class="folder-front"></div>
+      </div>
+      <p class="project-title">Lyrical Linkin Park</p>
+    </article>
+
+  </div>
+
+</body>
+</html>
