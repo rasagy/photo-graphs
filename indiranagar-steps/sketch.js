@@ -61,6 +61,39 @@ function mousePressed() {
   background(0);
 }
 
+function touchStarted() {
+  if (touches.length === 0) return false;
+  let tx = touches[0].x;
+  let ty = touches[0].y;
+
+  if (!lastX) lastX = tx;
+  if (!lastY) lastY = ty;
+
+  background(0, 1);
+
+  let dx = abs(tx - lastX);
+  let dy = abs(ty - lastY);
+  let diff = max(dx, dy);
+
+  if (diff > thresh) {
+    let i = floor(random(5));
+    rect(tx, ty, diff + 4);
+    if ((tx > lastX && ty < lastY) || (tx < lastX && ty > lastY)) {
+      image(l[i], tx - diff/2, ty - diff/2, diff, diff);
+    } else {
+      image(r[i], tx - diff/2, ty - diff/2, diff, diff);
+    }
+    lastX = tx;
+    lastY = ty;
+  }
+
+  return false; // prevent default tap behavior (scroll, zoom)
+}
+
+function touchMoved() {
+  return false; // prevent scroll while touching canvas
+}
+
 // Dynamically resize the canvas when the user resizes the browser
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);

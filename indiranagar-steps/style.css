@@ -5,3 +5,32 @@ html, body {
 canvas {
   display: block;
 }
+.title, .subtitle, .back-link {
+  font-family: monospace;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 10;
+  color: #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  margin: 0;
+  text-align: center;
+}
+.title {
+  top: 16px;
+  font-size: 15px;
+  font-weight: bold;
+}
+.subtitle {
+  top: 40px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+.back-link {
+  bottom: 16px;
+  text-decoration: underline;
+  pointer-events: auto;
+  z-index: 9999;
+}
