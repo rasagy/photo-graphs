@@ -55,6 +55,15 @@
     }
 
     /* ── Gradient background ──────────────────────────────────────────── */
+    .back-link {
+      display: block; text-align: center;
+      padding: 1rem 0 2rem;
+      font-family: sans-serif; font-size: 0.85rem;
+      color: #555; text-decoration: none;
+    }
+    .back-link:hover { color: #111; text-decoration: underline; }
+
+    /* ── Gradient background ──────────────────────────────────────────── */
     #gradient-bg {
       position: fixed; inset: 0; z-index: -1;
       pointer-events: none; overflow: hidden;
@@ -81,5 +90,6 @@
   <!-- Your visualization code will go here -->
   <script src="script.js"></script>
 
+  <a class="back-link" href="../">View more photo-graphs</a>
 </body>
 </html>

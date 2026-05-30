@@ -35,9 +35,9 @@ filename, name, extension, date_created, time_created, size, dimensions, duratio
 **Radial layout:**
 - Angle maps hour 6–18 (6AM–6PM) to 0.5π–2.5π (clockwise from bottom)
 - Radius maps minute 0–59 to inner–outer plot radius
-- Straight radial hour lines: dotted (`stroke-dasharray: 1,4`, round caps, stroke-width 1)
-- Spiral gridlines drawn per hour: dashed (`stroke-dasharray: 4,4`)
-- Concentric rings at minutes 0, 15, 30, 45, 60: filled circles drawn outer→inner, `rgba(0,0,0,0.02)` fill (stacks to create subtle gradient); minute=0 ring filled white to clear the center
+- Straight radial hour lines: dotted (`stroke-dasharray: 1,4`, round caps, stroke-width 1), stroke `#333` at opacity 0.5
+- Spiral gridlines drawn per hour: dashed (`stroke-dasharray: 4,4`), stroke `#bbb`
+- Concentric rings at minutes 0, 15, 30, 45, 60: filled circles drawn outer→inner, `rgba(0,0,0,0.02)` fill (stacks to create subtle gradient); minute=0 ring filled `rgba(255,255,255,0.3)` (semi-transparent, lets gradient background show through)
 
 **Shapes:**
 - All media: thumbnail `<image>` elements centered at the radial position
@@ -69,7 +69,7 @@ filename, name, extension, date_created, time_created, size, dimensions, duratio
 **Default opacity:** 0.5
 
 **Filters (top-right panel):**
-- Two independent toggle groups: TYPE (Photos / Videos) and ORIENTATION (Horizontal / Vertical)
+- Three independent toggle groups: TYPE (Photos / Videos), ORIENTATION (Horizontal / Vertical), and ANNOTATIONS (Show labels)
 - "Photos" toggles JPG + HEIC together; "Videos" toggles MOV
 - Active = dark fill (#333) + white text; inactive = light fill (#eee) + grey text
 - `targetOpacity(d)` returns 0.5 if item passes both filters, 0 if not — used by `updateVisibility()` and mouseleave handlers
@@ -77,7 +77,8 @@ filename, name, extension, date_created, time_created, size, dimensions, duratio
 
 **Annotations (d3-annotation library):**
 - Loaded via CDN alongside D3; all annotation elements live in `annotationArcGroup` (`g.annotation-arcs`) appended to `plotGroup`
-- Group starts at `opacity: 0` and fades in after 3500ms (once all photo load animations finish)
+- Hidden by default (`showAnnotations = false`); toggled via the "Show labels" button in the filter panel; fades in/out with 300ms transition
+- When visible, fades in after 3500ms load delay (once all photo animations finish)
 - Two types in use:
   - **Time-range arcs** — SVG `<path>` drawn at `plotRadius + 10` using `annotationArcPath(startHour, startMin, endHour, endMin)`; clockwise arc (`sweep-flag=1`); label anchored to arc midpoint via `arcMidPos()`. Current ranges: "Setup" 8:00–9:15 AM (orange `#E07B39`), "Panel" 2:30–3:15 PM (purple `#6A4E9C`)
   - **Point callouts** — `d3.annotationCallout` pointing to a specific photo's exact radial position (`x`/`y` computed from `angleScale` + `radiusScale`). Current example: `IMG_0149` at 12:58 labelled "Group photo at Lunch!" (green `#2A7D4F`)

@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(ls /Users/rasagy/Documents/GitHub/photo-graphics-local/vizchitra-2025/v3/assets/*.mp4 2>/dev/null | head -5)",
-      "Bash(sips -g pixelWidth -g pixelHeight /Users/rasagy/Documents/GitHub/photo-graphics-local/vizchitra-2025/v3/assets/IMG_3169_thumb.JPG 2>/dev/null && ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 /Users/rasagy/Documents/GitHub/photo-graphics-local/vizchitra-2025/v3/assets/IMG_0086.mp4 2>/dev/null)"
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/rasagy/Documents/GitHub/photo-graphics-local/vizchitra-2025/v3/assets/IMG_3169_thumb.JPG 2>/dev/null && ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 /Users/rasagy/Documents/GitHub/photo-graphics-local/vizchitra-2025/v3/assets/IMG_0086.mp4 2>/dev/null)",
+      "Bash(ffprobe -v quiet -select_streams v:0 -show_entries stream=width,height -show_entries stream_tags=rotate -show_entries stream_side_data=rotation -of json /Users/rasagy/Documents/GitHub/photo-graphs/vizchitra-2025/assets_hires/IMG_3174.mp4)",
+      "Bash(ffprobe -v quiet -show_streams /Users/rasagy/Documents/GitHub/photo-graphs/vizchitra-2025/assets_hires/IMG_3174.mp4)",
+      "Bash(ffprobe -v quiet -select_streams v:0 -show_entries stream=width,height -of csv=p=0 /Users/rasagy/Documents/GitHub/photo-graphs/vizchitra-2025/assets/IMG_3174.mp4)",
+      "Bash(ffprobe -v quiet -select_streams v:0 -show_entries stream=width,height -of csv=p=0 assets/__TRACKED_VAR__.mp4)",
+      "Bash(ffprobe -v quiet -select_streams v:0 -show_entries stream=width,height -of csv=p=0 assets_hires/__TRACKED_VAR__.mp4)",
+      "Bash(ffprobe -v quiet -show_streams /Users/rasagy/Documents/GitHub/photo-graphs/vizchitra-2025/assets/IMG_3174.mp4)",
+      "Bash(ffprobe -v quiet -show_streams /Users/rasagy/Documents/GitHub/photo-graphs/vizchitra-2025/assets/IMG_0086.mp4)"
     ]
   }
 }
