@@ -43,6 +43,23 @@
       line-height: 1.6;
     }
 
+    .subtitle a{
+      color: #00449E;
+      display: inline-block;
+      padding: 2px 4px;
+      margin: 0 -4px;
+    }
+
+    p.subtitle{
+      display: inline-block;
+      padding: 0 4px;
+    }
+
+    .subtitle a:hover {
+      color: #f4f4f4;
+      background: #00449E;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -74,7 +91,7 @@
     }
 
     .project.shipped {
-      --folder-back: #1D4ED8;
+      --folder-back: #00449E;;
       --folder-front: rgba(130, 170, 255, 0.6);
     }
 
@@ -191,6 +208,9 @@
       letter-spacing: -0.01em;
       color: #1a1a1a;
     }
+    a:hover .project-title{
+      color: #00449E;
+    }
 
     .project.empty .project-title {
       color: #94A3B8;
@@ -211,7 +231,8 @@
 
   <header>
     <h1>Photo-<em>graphs</em></h1>
-    <p class="subtitle">Collection of experiments that turn photography into data collection &amp; create novel graphs &amp; visual ways to express what's unique about them.</p>
+    <p class="subtitle">Collection of experiments that turn photography into data collection &amp; create unique ways to express them.</p>
+    <p class="subtitle"><a href="./talk/">Slides from my talk on Photo-<i>graph</i>-ie @ IndieWebClub BLR.</a></p>
   </header>
 
   <div class="grid">
@@ -271,7 +292,7 @@
       </a>
     </article>
     <!-- Not started -->
-    <article class="project empty">
+    <article class="project empty" title="Coming soon!">
       <div class="folder">
         <div class="folder-back">
           <div class="folder-tab"></div>
@@ -282,7 +303,7 @@
       <p class="project-title">Colors of Kochi Biennale</p>
     </article>
 
-    <article class="project empty">
+    <article class="project empty" title="Coming soon!">
       <div class="folder">
         <div class="folder-back">
           <div class="folder-tab"></div>
@@ -293,7 +314,7 @@
       <p class="project-title">Shot from an Airplane</p>
     </article>
 
-    <article class="project empty">
+    <article class="project empty" title="Coming soon!">
       <div class="folder">
         <div class="folder-back">
           <div class="folder-tab"></div>
@@ -304,7 +325,7 @@
       <p class="project-title">Good Morning NID</p>
     </article>
 
-    <article class="project empty">
+    <article class="project empty" title="Coming soon!">
       <div class="folder">
         <div class="folder-back">
           <div class="folder-tab"></div>
@@ -315,7 +336,7 @@
       <p class="project-title">Fading Selves</p>
     </article>
 
-    <article class="project empty">
+    <article class="project empty" title="Coming soon!">
       <div class="folder">
         <div class="folder-back">
           <div class="folder-tab"></div>
