@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Visualizing Photos from VizChitra</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <style>
@@ -12,7 +13,119 @@
     }
     svg {
       display: block;
+      margin: 0;
+    }
+
+    #chart-wrapper {
+      position: relative;
+      width: 900px;
       margin: 20px auto;
+    }
+
+    #chart-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    #chart-title {
+      position: absolute;
+      top: 30px;
+      left: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #filter-panel {
+      position: absolute;
+      top: 100px;
+      left: 750px;
+      pointer-events: auto;
+    }
+
+    .filter-group {
+      margin-bottom: 8px;
+    }
+
+    .filter-label {
+      display: block;
+      font-size: 9px;
+      color: #aaa;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .filter-btn {
+      font-size: 10px;
+      height: 20px;
+      padding: 0 8px;
+      border-radius: 4px;
+      border: 0.5px solid #bbb;
+      cursor: pointer;
+      background: #eee;
+      color: #888;
+      margin-right: 4px;
+      font-family: sans-serif;
+    }
+
+    .filter-btn.active {
+      background: #333;
+      color: white;
+    }
+
+    @media (max-width: 900px) {
+      #chart-wrapper {
+        width: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #chart-overlay {
+        position: static;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 16px 12px;
+        box-sizing: border-box;
+        gap: 12px;
+      }
+
+      #chart-title {
+        position: static;
+        font-size: 20px;
+        text-align: center;
+      }
+
+      #filter-panel {
+        position: static;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px 20px;
+      }
+
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 0;
+      }
+
+      .filter-label {
+        text-align: center;
+        margin-bottom: 6px;
+      }
+
+      .filter-btn {
+        height: 36px;
+        padding: 0 14px;
+        font-size: 13px;
+        border-radius: 6px;
+      }
     }
 
     #photo-modal {
@@ -81,7 +194,27 @@
 </head>
 <body>
   <div id="gradient-bg" aria-hidden="true"></div>
-  <div id="chart"></div>
+  <div id="chart-wrapper">
+    <div id="chart-overlay">
+      <div id="chart-title">Visualizing a day of VizChitra 2025</div>
+      <div id="filter-panel">
+        <div class="filter-group">
+          <span class="filter-label">TYPE</span>
+          <button class="filter-btn active" id="btn-photos">Photos</button>
+          <button class="filter-btn active" id="btn-videos">Videos</button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">ORIENTATION</span>
+          <button class="filter-btn active" id="btn-horizontal">Horizontal</button>
+          <button class="filter-btn active" id="btn-vertical">Vertical</button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">ANNOTATIONS</span>
+          <button class="filter-btn" id="btn-annotations">Show labels</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Load D3.js -->
   <script src="https://d3js.org/d3.v7.min.js"></script>

@@ -53,16 +53,8 @@ async function createVisualization() {
       .attr("viewBox", [-width / 2, -height / 2, width, height])
       .style("font", "10px sans-serif");
 
-    svg.append("text")
-      .attr("x", -width / 2 + 20)
-      .attr("y", -height / 2 + 30)
-      .attr("font-size", "16px")
-      .attr("font-weight", "bold")
-      .attr("fill", "#333")
-      .text("Visualizing a day of VizChitra 2025");
-
-    const backLink = document.querySelector('.back-link');
-    document.body.insertBefore(svg.node(), backLink);  // Insert SVG before the back link
+    const chartWrapper = document.querySelector('#chart-wrapper');
+    chartWrapper.appendChild(svg.node());  // Append SVG after the overlay so title/buttons come first on mobile
 
     // --- MODAL LIGHTBOX ---
     function createModal() {
@@ -430,51 +422,37 @@ async function createVisualization() {
     });
 
     // 8. --- FILTERS ---
-    function makeButton(parent, x, y, w, label, getActive, onToggle) {
-      const btn = parent.append("g").attr("transform", `translate(${x}, ${y})`).style("cursor", "pointer");
-      const bg = btn.append("rect").attr("width", w).attr("height", 20).attr("rx", 4)
-        .attr("fill", getActive() ? "#333" : "#eee")
-        .attr("stroke", "#bbb").attr("stroke-width", 0.5);
-      const txt = btn.append("text").attr("x", w / 2).attr("y", 13).attr("text-anchor", "middle")
-        .attr("font-size", "10px").attr("fill", getActive() ? "white" : "#888").text(label);
-      btn.on("click", () => {
+    function wireButton(id, getActive, onToggle) {
+      const btn = document.getElementById(id);
+      btn.addEventListener("click", () => {
         onToggle();
-        bg.attr("fill", getActive() ? "#333" : "#eee");
-        txt.attr("fill", getActive() ? "white" : "#888");
+        btn.classList.toggle("active", getActive());
         updateVisibility();
       });
     }
 
-    const filterPanel = svg.append("g").attr("transform", "translate(300, -350)");
-
-    filterPanel.append("text").attr("y", 0).attr("font-size", "9px").attr("fill", "#aaa").attr("letter-spacing", 1).text("TYPE");
-    makeButton(filterPanel, 0, 8, 58, "Photos",
+    wireButton("btn-photos",
       () => activeTypes.has("JPG"),
       () => { if (activeTypes.has("JPG")) { activeTypes.delete("JPG"); activeTypes.delete("HEIC"); } else { activeTypes.add("JPG"); activeTypes.add("HEIC"); } }
     );
-    makeButton(filterPanel, 64, 8, 52, "Videos",
+    wireButton("btn-videos",
       () => activeTypes.has("MOV"),
       () => { if (activeTypes.has("MOV")) activeTypes.delete("MOV"); else activeTypes.add("MOV"); }
     );
-
-    filterPanel.append("text").attr("y", 46).attr("font-size", "9px").attr("fill", "#aaa").attr("letter-spacing", 1).text("ORIENTATION");
-    makeButton(filterPanel, 0, 54, 72, "Horizontal",
+    wireButton("btn-horizontal",
       () => activeOrientations.has("horizontal"),
       () => { if (activeOrientations.has("horizontal")) activeOrientations.delete("horizontal"); else activeOrientations.add("horizontal"); }
     );
-    makeButton(filterPanel, 78, 54, 54, "Vertical",
+    wireButton("btn-vertical",
       () => activeOrientations.has("vertical"),
       () => { if (activeOrientations.has("vertical")) activeOrientations.delete("vertical"); else activeOrientations.add("vertical"); }
     );
 
-    filterPanel.append("text").attr("y", 92).attr("font-size", "9px").attr("fill", "#aaa").attr("letter-spacing", 1).text("ANNOTATIONS");
-    makeButton(filterPanel, 0, 100, 88, "Show labels",
-      () => showAnnotations,
-      () => {
-        showAnnotations = !showAnnotations;
-        annotationArcGroup.transition().duration(300).attr("opacity", showAnnotations ? 1 : 0);
-      }
-    );
+    document.getElementById("btn-annotations").addEventListener("click", function() {
+      showAnnotations = !showAnnotations;
+      this.classList.toggle("active", showAnnotations);
+      annotationArcGroup.transition().duration(300).attr("opacity", showAnnotations ? 1 : 0);
+    });
 
   } catch (error) {
     console.error("Error loading data:", error);
