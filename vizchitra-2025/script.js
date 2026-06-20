@@ -48,8 +48,6 @@ async function createVisualization() {
 
     // 3. --- CREATE SVG AND PLOT GROUP ---
     const svg = d3.create("svg")
-      .attr("width", width)
-      .attr("height", height)
       .attr("viewBox", [-width / 2, -height / 2, width, height])
       .style("font", "10px sans-serif");
 
@@ -412,10 +410,14 @@ async function createVisualization() {
       if (activeNode === null) d3.select(node.parentNode).classed("has-active", false);
     }
 
-    shapes.on("mouseover", function(event, d) { expandNode(this, d); })
-          .on("mouseleave", function(event, d) { onLeave(this, d); });
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
 
-    // Click any thumbnail to open modal lightbox
+    if (!isTouch) {
+      shapes.on("mouseover", function(event, d) { expandNode(this, d); })
+            .on("mouseleave", function(event, d) { onLeave(this, d); });
+    }
+
+    // Click any thumbnail to open modal lightbox (tap on touch, click on desktop)
     shapes.on("click", function(event, d) {
       event.stopPropagation();
       modal.open(d);
