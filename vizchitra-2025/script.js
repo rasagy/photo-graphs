@@ -391,9 +391,16 @@ async function createVisualization() {
       const i = shapes.nodes().indexOf(node);
       const g = d3.select(node);
       g.raise();
+      g.interrupt();
       g.attr("opacity", 1);
       g.classed("active-node", true);
       d3.select(node.parentNode).classed("has-active", true);
+      shapes.each(function(dd) {
+        if (this !== node) {
+          d3.select(this).transition().duration(150)
+            .attr("opacity", targetOpacity(dd) === 0 ? 0 : 0.1);
+        }
+      });
       const w = thumbW(d) * HOVER_SCALE;
       const h = w * getAspectRatio(d);
       g.select("image").transition().duration(150)
@@ -407,7 +414,11 @@ async function createVisualization() {
     function onLeave(node, d) {
       if (activeNode === node) activeNode = null;
       collapseNode(node);
-      if (activeNode === null) d3.select(node.parentNode).classed("has-active", false);
+      if (activeNode === null) {
+        d3.select(node.parentNode).classed("has-active", false);
+        shapes.transition().duration(150)
+          .attr("opacity", dd => targetOpacity(dd));
+      }
     }
 
     const isTouch = window.matchMedia("(pointer: coarse)").matches;

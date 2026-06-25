@@ -48,15 +48,18 @@ filename, name, extension, date_created, time_created, size, dimensions, duratio
 - Each thumbnail clipped to rounded corners via per-element `<clipPath>` in `<defs>` (rx=5); clip rect is resized on hover alongside the image
 - Thumbnails have a 2px white border (`stroke`) + 5px border radius via an overlaid `<rect class="thumb-border">` with `pointer-events: none`
 
-**Hover behavior:**
+**Hover behavior (desktop only):**
+- `mouseover`/`mouseleave` handlers are only attached when `window.matchMedia("(pointer: coarse)").matches` is false (i.e. non-touch devices)
 - `activeNode` tracks the currently expanded thumbnail; entering a new thumbnail collapses the previous one immediately (prevents stuck-expanded state on fast mouse movement)
 - `g.raise()` brings hovered element to front (SVG DOM order)
 - Opacity goes to 1 on hover, restores to 0.5 on leave
 - Info label (time only, white pill background) shown below expanded thumbnail
+- On touch devices, tap goes directly to the modal lightbox (no expand step)
 
-**Title:**
-- SVG text element top-left (`-width/2 + 20, -height/2 + 30`), 16px bold, fill `#333`
-- Text: "Visualizing a day of VizChitra 2025"
+**Title & subtitle:**
+- Both are HTML elements in `#chart-overlay` (absolutely positioned over the SVG), not SVG text
+- `#chart-title`: 20px bold, `#333`, `top: 0; left: 20px`
+- `#chart-subtitle`: 11px, `#666`, `top: 28px; left: 20px`, `max-width: 220px`; contains italic *photo-graph* and a link to the project page
 
 **Time label:**
 - `formatTime(t)` converts `"HH:MM:SS"` → `"H:MM AM/PM"`
@@ -71,7 +74,9 @@ filename, name, extension, date_created, time_created, size, dimensions, duratio
 **Filters (top-right panel):**
 - Three independent toggle groups: TYPE (Photos / Videos), ORIENTATION (Horizontal / Vertical), and ANNOTATIONS (Show labels)
 - "Photos" toggles JPG + HEIC together; "Videos" toggles MOV
-- Active = dark fill (#333) + white text; inactive = light fill (#eee) + grey text
+- Buttons are HTML `<button class="filter-btn">` elements in `#filter-panel` inside `#chart-overlay`; positioned `top: 30px; left: 750px` on desktop
+- Active = dark fill (#333) + white text (`.active` class); inactive = light fill (#eee) + grey text
+- Click listeners wired in `script.js` via `wireButton(id, getActive, onToggle)`
 - `targetOpacity(d)` returns 0.5 if item passes both filters, 0 if not — used by `updateVisibility()` and mouseleave handlers
 - Hidden items get `pointer-events: none` so they don't intercept hover
 
@@ -84,8 +89,15 @@ filename, name, extension, date_created, time_created, size, dimensions, duratio
   - **Point callouts** — `d3.annotationCallout` pointing to a specific photo's exact radial position (`x`/`y` computed from `angleScale` + `radiusScale`). Current example: `IMG_0149` at 12:58 labelled "Group photo at Lunch!" (green `#2A7D4F`)
 - See `Annotations-reference.md` for full API notes and arc math explanation
 
+## Responsive layout
+
+- SVG has no fixed `width`/`height` attributes — sized via `width: 100%; height: auto` in CSS, scaled by the browser using `viewBox`
+- `#chart-wrapper`: `width: 900px; position: relative` on desktop; switches to `width: 100%; display: flex; flex-direction: column` on mobile (`max-width: 900px` media query)
+- `#chart-overlay`: `position: absolute; inset: 0` on desktop (overlaid on SVG); `position: static` on mobile (stacks above SVG in DOM order)
+- On mobile, title and subtitle are centered; filter buttons are larger (36px height) and wrap as needed
+- SVG is appended as the last child of `#chart-wrapper` so it appears below the overlay on mobile
+
 ## Notes
 
-- SVG is appended directly to `body`, not into `#chart` div
 - No legend (removed)
 - Hour labels offset at `plotRadius + 25` from centre
